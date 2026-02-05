@@ -46,15 +46,21 @@ func newGame() -> void:
 
 
 func setUpMines(avoid: Vector2i) -> void:
-	## Esto genera el tablero, hay que volarlo
-	for i in range(MINE_COUNT):
-		cells[i] = 0
+	### Esto genera el tablero, hay que volarlo
+	#for i in range(MINE_COUNT):
+	#	cells[i] = 0
+	#
+	#cells.shuffle()
+	## Make sure you don't have bombs too close to the starting area
+	#while getSurroundingCells(avoid, 5).has(0):
+	#	cells.shuffle()
+	#
+	cells[CELL_ROWS/2] = 0
 	
-	cells.shuffle()
-	# Make sure you don't have bombs too close to the starting area
-	while getSurroundingCells(avoid, 5).has(0):
-		cells.shuffle()
-	
+	setupNumberedCells()
+
+
+func setupNumberedCells() -> void:
 	## Esto esta bien y va a haber que llamarlo constantemente, o algo mejor
 	# Set up the numbered cells
 	for y in range(CELL_COLUMNS):
@@ -68,7 +74,6 @@ func setUpMines(avoid: Vector2i) -> void:
 				
 				if mineCount > 0:
 					cells[getCellIndex(Vector2i(x, y))] = mineCount
-
 
 # Detect clicks on the cells
 func _input(event: InputEvent) -> void:
@@ -201,3 +206,6 @@ func revealAllMines(avoid: Array[Vector2i]) -> void:
 
 func getAtlasCoords(cellCoords: Vector2i) -> Vector2i:
 	return get_cell_atlas_coords(0, cellCoords)
+
+
+#### tetrisweeper attempt
