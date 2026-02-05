@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://dgc444tdkf57y"]
+
+[ext_resource type="Texture2D" uid="uid://bgx1xjcyuy5gf" path="res://res/TilesTetris.png" id="1_22q3e"]
+[ext_resource type="Script" uid="uid://og84xfw3xrjs" path="res://Scenes/tile_map.gd" id="2_rf5he"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rf5he"]
+texture = ExtResource("1_22q3e")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_hg8vg"]
+sources/0 = SubResource("TileSetAtlasSource_rf5he")
+
+[node name="Node2D" type="Node2D" unique_id=1642297842]
+
+[node name="TileMap" type="TileMap" parent="." unique_id=1543107753]
+texture_filter = 1
+scale = Vector2(2, 2)
+tile_set = SubResource("TileSet_hg8vg")
+format = 2
+script = ExtResource("2_rf5he")
