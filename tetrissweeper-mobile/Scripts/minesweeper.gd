@@ -103,6 +103,20 @@ func render_tetromino(tetronimo: Array, position: Vector2i, atlas: Vector2i) -> 
 	for block in tetronimo:
 		board.set_cell(position + block, title_id, atlas) 
 
+func unrender_tetromino(tetronimo: Array, position: Vector2i) -> void:
+	for block in tetronimo:
+		board.set_cell(position + block, -1) 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
+var fall_time: float = 0.5 # Piece falls every 0.5 seconds
+var fall_timer: float = 0
+
 func _process(delta: float) -> void:
-	pass
+	fall_timer += delta
+	if fall_timer >= fall_time:
+		unrender_tetromino(active_tetromino, current_position)
+		
+		current_position += Vector2i(0,1) # this is the falling
+		
+		render_tetromino(active_tetromino, current_position, piece_atlas)
+		fall_timer = 0 # Reset the timer
