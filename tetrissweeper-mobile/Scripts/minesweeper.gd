@@ -60,6 +60,11 @@ const ROWS: int = 20
 const START_POSITION: Vector2i = Vector2i(5, 1)
 var current_position: Vector2i
 
+const movement_direction: Array[Vector2i] = [Vector2i.LEFT, Vector2i.DOWN, Vector2i.RIGHT]
+var fall_timer: float = 0.0
+var fall_interval: float = 1.0
+const fall_multiplier: float = 10.0
+
 var current_tetromino: Array
 var next_tetromino: Array
 var rotation_index: int = 0
@@ -79,44 +84,81 @@ func _ready() -> void:
 
 
 func start_game() -> void:
-	current_tetromino = choose_tetronimo()
+	current_tetromino = choose_tetromino()
 	piece_atlas = Vector2i(all_tetrominoes.find(current_tetromino), 0)
-	initialize_tetronimo()
+	initialize_tetromino()
 
-func choose_tetronimo() -> Array:
-	var selected_tetronimo: Array
+func choose_tetromino() -> Array:
+	var selected_tetromino: Array
 	if not tetrominoes.is_empty():
 		tetrominoes.shuffle()
-		selected_tetronimo = tetrominoes.pop_front()
+		selected_tetromino = tetrominoes.pop_front()
 	else:
 		tetrominoes = all_tetrominoes.duplicate()
 		tetrominoes.shuffle()
-		selected_tetronimo = tetrominoes.pop_front()
-	return selected_tetronimo
+		selected_tetromino = tetrominoes.pop_front()
+	return selected_tetromino
 
-func initialize_tetronimo() -> void:
+func initialize_tetromino() -> void:
 	current_position = START_POSITION
 	active_tetromino = current_tetromino[rotation_index]
 	render_tetromino(active_tetromino, current_position, piece_atlas)
 
-func render_tetromino(tetronimo: Array, position: Vector2i, atlas: Vector2i) -> void:
-	for block in tetronimo:
-		board.set_cell(position + block, title_id, atlas) 
+func render_tetromino(tetromino: Array, pos: Vector2i, atlas: Vector2i) -> void:
+	for block in tetromino:
+		active.set_cell(pos + block, title_id, atlas) 
 
-func unrender_tetromino(tetronimo: Array, position: Vector2i) -> void:
-	for block in tetronimo:
-		board.set_cell(position + block, -1) 
+func clear_tetromino() -> void:
+	for block in active_tetromino:
+		active.set_cell(current_position + block, -1) 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-var fall_time: float = 0.5 # Piece falls every 0.5 seconds
-var fall_timer: float = 0
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
+	var move_direction: Vector2i = Vector2i.ZERO
+
+	if Input.is_action_just_pressed("ui_left"):
+		move_direction = Vector2i.LEFT
+	elif Input.is_action_just_pressed("ui_down"):
+		move_direction = Vector2i.DOWN
+	elif Input.is_action_just_pressed("ui_right"):
+		move_direction = Vector2i.RIGHT
+
+	
+	if move_direction != Vector2i.ZERO:
+		move_tetromino(move_direction)
+
+	if Input.is_action_just_pressed("ui_up"):
+		rotate_tetromino()
+
+	var current_fall_interval: float = fall_interval
+	if Input.is_action_pressed("ui_down"):
+		current_fall_interval /= fall_multiplier
+
 	fall_timer += delta
-	if fall_timer >= fall_time:
-		unrender_tetromino(active_tetromino, current_position)
-		
-		current_position += Vector2i(0,1) # this is the falling
-		
+	if fall_timer >= current_fall_interval:
+		move_tetromino(Vector2i.DOWN)
+		fall_timer = 0
+
+
+func move_tetromino(dir: Vector2i) -> void:
+	if is_valid_move(dir):
+		clear_tetromino()# H
+		current_position += dir
 		render_tetromino(active_tetromino, current_position, piece_atlas)
-		fall_timer = 0 # Reset the timer
+
+
+func is_valid_move(dir: Vector2i) -> bool:
+	for block in active_tetromino:
+		if not is_within_bounds(current_position + block + dir):
+			return false
+	return true
+
+func is_within_bounds(pos: Vector2i) -> bool:
+	if pos.x < 0 or pos.x >= COLS + 1 or pos.y < 0 or pos.y >= ROWS + 1:	
+		return false
+
+	var title_id = board.get_cell_source_id(pos)
+	return title_id == -1
+
+func rotate_tetromino() -> void:
+	return
