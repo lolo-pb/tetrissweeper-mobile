@@ -161,4 +161,17 @@ func is_within_bounds(pos: Vector2i) -> bool:
 	return tile_id == -1
 
 func rotate_tetromino() -> void:
-	return
+	if is_valid_rotation():
+		clear_tetromino()
+		rotation_index = (rotation_index - 1) % 4
+		active_tetromino = current_tetromino[rotation_index]
+		render_tetromino(active_tetromino, current_position, piece_atlas)
+
+func is_valid_rotation() -> bool:
+	var next_rotation_index = (rotation_index + 1) % 4
+	var next_rotation = current_tetromino[next_rotation_index]
+
+	for block in next_rotation:
+		if not is_within_bounds(current_position + block):
+			return false
+	return true
