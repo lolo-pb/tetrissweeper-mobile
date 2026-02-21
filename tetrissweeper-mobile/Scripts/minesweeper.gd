@@ -63,18 +63,18 @@ var current_position: Vector2i
 const movement_direction: Array[Vector2i] = [Vector2i.LEFT, Vector2i.DOWN, Vector2i.RIGHT]
 var fall_timer: float = 0.0
 var fall_interval: float = 1.0
-const fall_multiplier: float = 10.0
+const fast_fall_multiplier: float = 10.0
 
 var current_tetromino: Array
 var next_tetromino: Array
 var rotation_index: int = 0
 var active_tetromino: Array = []
 
-var title_id: int = 0
+var tile_id: int = 0
 var piece_atlas: Vector2i
 var next_piece_atlas: Vector2i
 
-@onready var board: TileMapLayer  = $Board
+@onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active 
 
 
@@ -106,15 +106,15 @@ func initialize_tetromino() -> void:
 
 func render_tetromino(tetromino: Array, pos: Vector2i, atlas: Vector2i) -> void:
 	for block in tetromino:
-		active.set_cell(pos + block, title_id, atlas) 
+		active.set_cell(pos + block, tile_id, atlas) 
 
 func clear_tetromino() -> void:
 	for block in active_tetromino:
-		active.set_cell(current_position + block, -1) 
+		active.erase_cell(current_position + block) 
 
 
 func _physics_process(delta: float) -> void:
-	var move_direction: Vector2i = Vector2i.ZERO
+	var move_direction = Vector2i.ZERO
 
 	if Input.is_action_just_pressed("ui_left"):
 		move_direction = Vector2i.LEFT
@@ -130,9 +130,9 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("ui_up"):
 		rotate_tetromino()
 
-	var current_fall_interval: float = fall_interval
+	var current_fall_interval = fall_interval
 	if Input.is_action_pressed("ui_down"):
-		current_fall_interval /= fall_multiplier
+		current_fall_interval /= fast_fall_multiplier
 
 	fall_timer += delta
 	if fall_timer >= current_fall_interval:
@@ -157,8 +157,8 @@ func is_within_bounds(pos: Vector2i) -> bool:
 	if pos.x < 0 or pos.x >= COLS + 1 or pos.y < 0 or pos.y >= ROWS + 1:	
 		return false
 
-	var title_id = board.get_cell_source_id(pos)
-	return title_id == -1
+	var tile_id = board.get_cell_source_id(pos)
+	return tile_id == -1
 
 func rotate_tetromino() -> void:
 	return

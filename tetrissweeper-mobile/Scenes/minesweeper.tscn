@@ -4,6 +4,7 @@
 [ext_resource type="Script" uid="uid://dwjl3mao5u0j3" path="res://Scripts/minesweeper.gd" id="1_dfkm2"]
 [ext_resource type="Script" uid="uid://og84xfw3xrjs" path="res://Scenes/tile_map.gd" id="2_rf5he"]
 [ext_resource type="Texture2D" uid="uid://boy4rhqd7axx7" path="res://res/tetris-Sheet-outline.png" id="4_7xpvn"]
+[ext_resource type="Texture2D" uid="uid://cj26a6mo3u3pj" path="res://res/tetris-Sheet.png" id="4_b7cn6"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rf5he"]
 texture = ExtResource("1_22q3e")
@@ -24,6 +25,23 @@ texture = ExtResource("1_22q3e")
 
 [sub_resource type="TileSet" id="TileSet_hg8vg"]
 sources/0 = SubResource("TileSetAtlasSource_rf5he")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xvpj2"]
+texture = ExtResource("4_b7cn6")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_x0aub"]
+sources/0 = SubResource("TileSetAtlasSource_xvpj2")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_b7cn6"]
 texture = ExtResource("4_7xpvn")
@@ -53,6 +71,7 @@ format = 2
 script = ExtResource("2_rf5he")
 
 [node name="Active" type="TileMapLayer" parent="." unique_id=1535434227]
+tile_set = SubResource("TileSet_x0aub")
 
 [node name="Board" type="TileMapLayer" parent="." unique_id=158153341]
 tile_map_data = PackedByteArray("AAAAAAAAAAAKAAAAAAAAAAEAAAAKAAAAAAAAAAIAAAAKAAAAAAAAAAMAAAAKAAAAAAAAAAQAAAAKAAAAAAAAAAUAAAAKAAAAAAAAAAYAAAAKAAAAAAAAAAcAAAAKAAAAAAAAAAgAAAAKAAAAAAAAAAkAAAAKAAAAAAAAAAoAAAAKAAAAAAAAAAsAAAAKAAAAAAAAAAwAAAAKAAAAAAAAAA0AAAAKAAAAAAAAAA4AAAAKAAAAAAAAAA8AAAAKAAAAAAAAABAAAAAKAAAAAAAAABEAAAAKAAAAAAAAABIAAAAKAAAAAAAAABMAAAAKAAAAAAAAABQAAAAKAAAAAAAAABUAAAAKAAAAAAABAAAAAAAKAAAAAAABABUAAAAKAAAAAAACAAAAAAAKAAAAAAACABUAAAAKAAAAAAADAAAAAAAKAAAAAAADABUAAAAKAAAAAAAEAAAAAAAKAAAAAAAEABUAAAAKAAAAAAAFAAAAAAAKAAAAAAAFABUAAAAKAAAAAAAGAAAAAAAKAAAAAAAGABUAAAAKAAAAAAAHAAAAAAAKAAAAAAAHABUAAAAKAAAAAAAIAAAAAAAKAAAAAAAIABUAAAAKAAAAAAAJAAAAAAAKAAAAAAAJABUAAAAKAAAAAAAKAAAAAAAKAAAAAAAKABUAAAAKAAAAAAALAAAAAAAKAAAAAAALAAEAAAAKAAAAAAALAAIAAAAKAAAAAAALAAMAAAAKAAAAAAALAAQAAAAKAAAAAAALAAUAAAAKAAAAAAALAAYAAAAKAAAAAAALAAcAAAAKAAAAAAALAAgAAAAKAAAAAAALAAkAAAAKAAAAAAALAAoAAAAKAAAAAAALAAsAAAAKAAAAAAALAAwAAAAKAAAAAAALAA0AAAAKAAAAAAALAA4AAAAKAAAAAAALAA8AAAAKAAAAAAALABAAAAAKAAAAAAALABEAAAAKAAAAAAALABIAAAAKAAAAAAALABMAAAAKAAAAAAALABQAAAAKAAAAAAALABUAAAAKAAAAAAA=")

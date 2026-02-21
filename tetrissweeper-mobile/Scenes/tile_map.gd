@@ -39,10 +39,12 @@ func _ready() -> void:
 
 # Set up empty grid
 func newGame() -> void:
-	for y in range(CELL_COLUMNS):
-		for x in range(CELL_ROWS):
-			set_cell(0, Vector2i(x, y), 0, ATLAS_HIDDEN)
-			cells.append(-1)
+	# Commented out minesweeper board drawing logic
+	#for y in range(CELL_COLUMNS):
+	#	for x in range(CELL_ROWS):
+	#		set_cell(0, Vector2i(x, y), 0, ATLAS_HIDDEN)
+	#		cells.append(-1)
+	pass
 
 
 func setUpMines(avoid: Vector2i) -> void:
