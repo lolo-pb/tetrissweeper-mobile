@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://bgx1xjcyuy5gf" path="res://res/TilesTetris.png" id="1_22q3e"]
 [ext_resource type="Script" uid="uid://dwjl3mao5u0j3" path="res://Scripts/minesweeper.gd" id="1_dfkm2"]
+[ext_resource type="PackedScene" uid="uid://tnkaoxobdw10" path="res://Scenes/game_hud.tscn" id="2_b7cn6"]
 [ext_resource type="Script" uid="uid://og84xfw3xrjs" path="res://Scenes/tile_map.gd" id="2_rf5he"]
 [ext_resource type="Texture2D" uid="uid://boy4rhqd7axx7" path="res://res/tetris-Sheet-outline.png" id="4_7xpvn"]
 [ext_resource type="Texture2D" uid="uid://cj26a6mo3u3pj" path="res://res/tetris-Sheet.png" id="4_b7cn6"]
@@ -61,7 +62,10 @@ texture = ExtResource("4_7xpvn")
 sources/0 = SubResource("TileSetAtlasSource_b7cn6")
 
 [node name="Node2D" type="Node2D" unique_id=1642297842]
+position = Vector2(175, 607)
 script = ExtResource("1_dfkm2")
+
+[node name="GameHUD" parent="." unique_id=2032419917 instance=ExtResource("2_b7cn6")]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1543107753]
 texture_filter = 1
