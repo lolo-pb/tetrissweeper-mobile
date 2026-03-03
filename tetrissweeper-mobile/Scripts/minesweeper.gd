@@ -78,8 +78,11 @@ var tile_id: int = 0
 var piece_atlas: Vector2i
 var next_piece_atlas: Vector2i
 
+var rng = RandomNumberGenerator.new()
+
 @onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active 
+@onready var mines: TileMapLayer = $Mines
 
 
 # Called when the node enters the scene tree for the first time.
@@ -88,6 +91,7 @@ func _ready() -> void:
 
 
 func start_game() -> void:
+	rng.randomize()
 	score = 0
 	$GameHUD/gameOverLabel.visible = false
 	is_game_running = true
@@ -175,6 +179,8 @@ func land_tetromino() -> void:
 	for block in active_tetromino:
 		active.erase_cell(current_position + block)
 		board.set_cell(current_position + block, tile_id, piece_atlas)
+		set_mine_in_tetronimo(active_tetromino)
+
 
 func clear_next_tetromino_preview() -> void: #cuidado con esto, el borrado es absoluto, no relativo
 	for y in range(4):
@@ -248,3 +254,12 @@ func is_valid_rotation() -> bool:
 		if not is_within_bounds(current_position + block):
 			return false
 	return true
+
+
+
+#CODIGO DE MINESWEEPER 
+
+func set_mine_in_tetronimo(tetronimo: Array) -> void:
+	for block in tetronimo:
+		if(rng.randi_range(0, 99) < 20):
+			mines.set_cell(current_position + block, tile_id, Vector2i(0, 0))#todo elegir que numero representa minas
