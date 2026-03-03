@@ -180,6 +180,8 @@ func land_tetromino() -> void:
 		active.erase_cell(current_position + block)
 		board.set_cell(current_position + block, tile_id, piece_atlas)
 		set_mine_in_tetronimo(active_tetromino)
+	setNumberedCells()
+
 
 
 func clear_next_tetromino_preview() -> void: #cuidado con esto, el borrado es absoluto, no relativo
@@ -263,3 +265,154 @@ func set_mine_in_tetronimo(tetronimo: Array) -> void:
 	for block in tetronimo:
 		if(rng.randi_range(0, 99) < 20):
 			mines.set_cell(current_position + block, tile_id, Vector2i(0, 0))#todo elegir que numero representa minas
+
+
+
+
+func setupNumberedCells() -> void:
+	## Esto esta bien y va a haber que llamarlo constantemente, o algo mejor
+	# Set up the numbered cells
+	for y in range(COLS):
+		for x in range(ROWS):
+			# For each cell at x, y
+			if not cells[getCellIndex(Vector2i(x, y))] == 0:
+				var mineCount := 0
+				for i in getSurroundingCells(Vector2i(x, y), 3):
+					if i == 0:
+						mineCount += 1
+				
+				if mineCount > 0:
+					cells[getCellIndex(Vector2i(x, y))] = mineCount
+
+# Detect clicks on the cells
+func _input(event: InputEvent) -> void:
+	if gameEnded == false:
+		if event.is_action_pressed("reveal"):
+			var cellAtMouse: Vector2i = local_to_map(get_local_mouse_position())
+			lastMove = []
+			# If not a flag
+			if getAtlasCoords(cellAtMouse) != ATLAS_FLAG:
+				if cells.has(0):
+					lastMove.append(cellAtMouse)
+					revealCell(cellAtMouse)
+					
+					# If clicked on a number cell
+					if cells[getCellIndex(cellAtMouse)] >= 1:
+						revealSurroundingCells(cellAtMouse, false)
+					
+					# If there was a mine revealed, end the game
+					for i in lastMove:
+						if cells[getCellIndex(i)] == 0:
+							gameEnded = true
+							revealAllMines(lastMove)
+				else:
+					setUpMines(cellAtMouse)
+					revealCell(cellAtMouse)
+		
+		if event.is_action_pressed("flag"):
+			var cellAtMouse: Vector2i = local_to_map(get_local_mouse_position())
+			# If unrevealed cell, place flag. If flagged cell, make unrevealed
+			if getAtlasCoords(cellAtMouse) == ATLAS_HIDDEN:
+				set_cell(0, cellAtMouse, 0, ATLAS_FLAG)
+			elif getAtlasCoords(cellAtMouse) == ATLAS_FLAG:
+				set_cell(0, cellAtMouse, 0, ATLAS_HIDDEN)
+
+
+# Determine what to do with the cell just clicked
+func revealCell(cellCoords: Vector2i) -> void:
+	var cellIndex: int
+	cellIndex = getCellIndex(cellCoords)
+	
+	var atlasCoords: Vector2i
+	match cells[cellIndex]:
+		-1: atlasCoords = ATLAS_EMPTY
+		0: atlasCoords = ATLAS_MINE_HIT
+		1: atlasCoords = ATLAS_NUM_1
+		2: atlasCoords = ATLAS_NUM_2
+		3: atlasCoords = ATLAS_NUM_3
+		4: atlasCoords = ATLAS_NUM_4
+		5: atlasCoords = ATLAS_NUM_5
+		6: atlasCoords = ATLAS_NUM_6
+		7: atlasCoords = ATLAS_NUM_7
+		8: atlasCoords = ATLAS_NUM_8
+	
+	set_cell(0, cellCoords, 0, atlasCoords)
+	
+	# Only empty cells will reveal all of the cells around it
+	if cells[cellIndex] == -1:
+		revealSurroundingCells(cellCoords, false)
+
+
+# Converts cell coordinates to index in cells array
+func getCellIndex(cellCoords: Vector2i) -> int:
+	if cellCoords.x < ROWS and cellCoords.y < COLS:
+		if cellCoords.x >= 0 and cellCoords.y >= 0:
+			return cellCoords.y * ROWS + cellCoords.x
+		else:
+			return -1
+	else:
+		return -1
+
+
+# Don't set size too high or it will lag/crash the game
+func getSurroundingCells(cellCoords: Vector2i, size: int) -> Array[int]:
+	surroundingCells = []
+	for y in range(-1, size - 1):
+		for x in range(-1, size - 1):
+			offsetCoords = cellCoords + Vector2i(x, y)
+			if getCellIndex(offsetCoords) > -1:
+				surroundingCells.append(cells[getCellIndex(offsetCoords)])
+			else:
+				surroundingCells.append(-1)
+	return surroundingCells
+
+
+func revealSurroundingCells(cellCoords: Vector2i, numberCanReveal: bool) -> void:
+	var numberFlags := 0
+	for y in range(-1, 2):
+		for x in range(-1, 2):
+			offsetCoords = cellCoords + Vector2i(x, y)
+			
+			if getCellIndex(offsetCoords) > -1:
+				if cells[getCellIndex(cellCoords)] >= 1:
+					# If a number cell was clicked
+					# If the cell is a flag
+					if getAtlasCoords(offsetCoords) == ATLAS_FLAG:
+						if numberCanReveal == false:
+							numberFlags += 1
+					else:
+						if numberCanReveal == true:
+							# If the cell isn't revealed yet
+							if getAtlasCoords(offsetCoords) == ATLAS_HIDDEN:
+								lastMove.append(offsetCoords)
+								revealCell(offsetCoords)
+				else:
+					# If empty cell
+					# If the cell isn't revealed yet or a flag
+					if getAtlasCoords(offsetCoords) == ATLAS_HIDDEN or getAtlasCoords(offsetCoords) == ATLAS_FLAG:
+						revealCell(offsetCoords)
+	
+	if cells[getCellIndex(cellCoords)] >= 1:
+		# If a number cell was clicked
+		if numberFlags == cells[getCellIndex(cellCoords)]:
+			revealSurroundingCells(cellCoords, true)
+
+
+func revealAllMines(avoid: Array[Vector2i]) -> void:
+	var cellCoords: Vector2i
+	for y in range(COLS):
+		for x in range(ROWS):
+			cellCoords = Vector2i(x, y)
+			if cells[getCellIndex(cellCoords)] == 0:
+				# If it was a bomb
+				if not avoid.has(cellCoords) && getAtlasCoords(cellCoords) != ATLAS_FLAG:
+					set_cell(0, cellCoords, 0, ATLAS_MINE_OFF)
+			else:
+				# If it wasn't a bomb and flag is on the cell
+				if getAtlasCoords(cellCoords) == ATLAS_FLAG:
+					set_cell(0, cellCoords, 0, ATLAS_WRONG_FLAG)
+
+
+func getAtlasCoords(cellCoords: Vector2i) -> Vector2i:
+	return get_cell_atlas_coords(0, cellCoords)
+
