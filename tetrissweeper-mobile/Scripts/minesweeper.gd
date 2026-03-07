@@ -84,6 +84,33 @@ var rng = RandomNumberGenerator.new()
 @onready var active: TileMapLayer = $Active 
 @onready var mines: TileMapLayer = $Mines
 
+# --- Minesweeper state ---
+enum CellState { COVERED, REVEALED, FLAGGED }
+
+# Minesweeper tile atlas coordinates for the Mines TileMapLayer
+const MS_COVERED_ATLAS: Vector2i = Vector2i(0, 0)
+const MS_FLAG_ATLAS: Vector2i = Vector2i(1, 0)
+const MS_BOMB_ATLAS: Vector2i = Vector2i(2, 0)
+const MS_BLANK_ATLAS: Vector2i = Vector2i(3, 0)
+const MS_BOMB_RED_ATLAS: Vector2i = Vector2i(0, 3)
+const MS_BOMB_CROSSED_ATLAS: Vector2i = Vector2i(1, 3)
+# Adjacent bomb numbers 1-8:
+const MS_NUMBER_ATLAS: Array[Vector2i] = [
+	Vector2i(0, 0),  # unused index 0
+	Vector2i(0, 1),  # 1
+	Vector2i(1, 1),  # 2
+	Vector2i(2, 1),  # 3
+	Vector2i(3, 1),  # 4
+	Vector2i(0, 2),  # 5
+	Vector2i(1, 2),  # 6
+	Vector2i(2, 2),  # 7
+	Vector2i(3, 2),  # 8
+]
+
+const BOMBS_PER_PIECE: int = 1
+
+# Key: Vector2i cell position, Value: { "is_bomb": bool, "state": CellState, "adjacent_bombs": int }
+var minesweeper_cells: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -95,6 +122,7 @@ func start_game() -> void:
 	score = 0
 	$GameHUD/gameOverLabel.visible = false
 	is_game_running = true
+	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
@@ -179,7 +207,7 @@ func land_tetromino() -> void:
 	for block in active_tetromino:
 		active.erase_cell(current_position + block)
 		board.set_cell(current_position + block, tile_id, piece_atlas)
-
+	transform_to_minesweeper(active_tetromino, current_position)
 
 
 func clear_next_tetromino_preview() -> void: #cuidado con esto, el borrado es absoluto, no relativo
@@ -205,19 +233,34 @@ func clear_board() -> void:
 	for y in range(ROWS):
 		for x in range(COLS):
 			board.erase_cell(Vector2i(x + 1, y + 1))
+			mines.erase_cell(Vector2i(x + 1, y + 1))
+	minesweeper_cells.clear()
 
 func shift_rows(start_row: int) -> void:
 	var atlas: Vector2i
+	var mines_atlas: Vector2i
 	for y in range(start_row, 1, -1):
 		for x in range(COLS):
-			atlas = board.get_cell_atlas_coords(Vector2i(x + 1, y - 1))
+			var cell = Vector2i(x + 1, y)
+			var above = Vector2i(x + 1, y - 1)
+			# Shift board layer
+			atlas = board.get_cell_atlas_coords(above)
 			if atlas == Vector2i(-1, -1):
-				board.erase_cell(Vector2i(x + 1, y))
+				board.erase_cell(cell)
 			else:
-				board.set_cell(Vector2i(x + 1, y), tile_id, atlas)
-	# Clear the topmost playable row (don't copy border tiles from row 0)
+				board.set_cell(cell, tile_id, atlas)
+			# Shift mines layer
+			mines_atlas = mines.get_cell_atlas_coords(above)
+			if mines_atlas == Vector2i(-1, -1):
+				mines.erase_cell(cell)
+			else:
+				mines.set_cell(cell, tile_id, mines_atlas)
+	# Clear the topmost playable row
 	for x in range(COLS):
 		board.erase_cell(Vector2i(x + 1, 1))
+		mines.erase_cell(Vector2i(x + 1, 1))
+	# Rebuild minesweeper_cells dictionary after shift
+	shift_minesweeper_data(start_row)
 
 func is_valid_move(dir: Vector2i) -> bool:
 	for block in active_tetromino:
@@ -226,7 +269,7 @@ func is_valid_move(dir: Vector2i) -> bool:
 	return true
 
 func is_within_bounds(pos: Vector2i) -> bool:
-	if pos.x < 0 or pos.x >= COLS + 1 or pos.y < 0 or pos.y >= ROWS + 1:	
+	if pos.x < 1 or pos.x > COLS or pos.y < 1 or pos.y > ROWS:	
 		return false
 
 	var tile_id = board.get_cell_source_id(pos)
@@ -254,3 +297,160 @@ func is_valid_rotation() -> bool:
 		if not is_within_bounds(current_position + block):
 			return false
 	return true
+
+
+# --- Minesweeper functions ---
+
+func transform_to_minesweeper(tetromino_blocks: Array, pos: Vector2i) -> void:
+	var absolute_cells: Array[Vector2i] = []
+	for block in tetromino_blocks:
+		absolute_cells.append(pos + block)
+
+	place_bombs(absolute_cells)
+	update_adjacent_bombs(absolute_cells)
+
+	for cell in absolute_cells:
+		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+
+
+func place_bombs(cells: Array[Vector2i]) -> void:
+	var bomb_count: int = mini(BOMBS_PER_PIECE, cells.size())
+	var indices: Array = range(cells.size())
+	# Fisher-Yates partial shuffle for bomb selection
+	for i in range(bomb_count):
+		var j: int = rng.randi_range(i, indices.size() - 1)
+		var tmp = indices[i]
+		indices[i] = indices[j]
+		indices[j] = tmp
+
+	for i in range(cells.size()):
+		var cell: Vector2i = cells[i]
+		minesweeper_cells[cell] = {
+			"is_bomb": i < bomb_count,
+			"state": CellState.COVERED,
+			"adjacent_bombs": 0
+		}
+
+
+func update_adjacent_bombs(new_cells: Array[Vector2i]) -> void:
+	# Collect all cells needing an adjacency recount: the new cells + existing neighbors
+	var cells_to_update: Dictionary = {}
+	for cell in new_cells:
+		cells_to_update[cell] = true
+		for neighbor in get_neighbors(cell):
+			if minesweeper_cells.has(neighbor):
+				cells_to_update[neighbor] = true
+
+	for cell in cells_to_update:
+		if not minesweeper_cells.has(cell):
+			continue
+		if minesweeper_cells[cell]["is_bomb"]:
+			continue
+		var count: int = 0
+		for neighbor in get_neighbors(cell):
+			if minesweeper_cells.has(neighbor) and minesweeper_cells[neighbor]["is_bomb"]:
+				count += 1
+		minesweeper_cells[cell]["adjacent_bombs"] = count
+		if minesweeper_cells[cell]["state"] == CellState.REVEALED:
+			render_minesweeper_cell(cell)
+
+
+func recalculate_all_adjacent_bombs() -> void:
+	for cell in minesweeper_cells:
+		if minesweeper_cells[cell]["is_bomb"]:
+			continue
+		var count: int = 0
+		for neighbor in get_neighbors(cell):
+			if minesweeper_cells.has(neighbor) and minesweeper_cells[neighbor]["is_bomb"]:
+				count += 1
+		minesweeper_cells[cell]["adjacent_bombs"] = count
+
+
+func get_neighbors(cell: Vector2i) -> Array[Vector2i]:
+	return [
+		cell + Vector2i(-1, -1), cell + Vector2i(0, -1), cell + Vector2i(1, -1),
+		cell + Vector2i(-1,  0),                          cell + Vector2i(1,  0),
+		cell + Vector2i(-1,  1), cell + Vector2i(0,  1), cell + Vector2i(1,  1)
+	]
+
+
+func reveal_cell(cell: Vector2i) -> void:
+	if not minesweeper_cells.has(cell):
+		return
+	if minesweeper_cells[cell]["state"] != CellState.COVERED:
+		return
+
+	minesweeper_cells[cell]["state"] = CellState.REVEALED
+
+	if minesweeper_cells[cell]["is_bomb"]:
+		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
+		# TODO: handle bomb reveal consequence (game over, score penalty, etc.)
+	else:
+		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]
+		if adj > 0:
+			mines.set_cell(cell, tile_id, MS_NUMBER_ATLAS[adj])
+		else:
+			mines.set_cell(cell, tile_id, MS_BLANK_ATLAS)
+			# Flood-fill reveal neighboring cells with 0 adjacent bombs
+			for neighbor in get_neighbors(cell):
+				reveal_cell(neighbor)
+
+
+func flag_cell(cell: Vector2i) -> void:
+	if not minesweeper_cells.has(cell):
+		return
+
+	if minesweeper_cells[cell]["state"] == CellState.COVERED:
+		minesweeper_cells[cell]["state"] = CellState.FLAGGED
+		mines.set_cell(cell, tile_id, MS_FLAG_ATLAS)
+	elif minesweeper_cells[cell]["state"] == CellState.FLAGGED:
+		minesweeper_cells[cell]["state"] = CellState.COVERED
+		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+
+
+func render_minesweeper_cell(cell: Vector2i) -> void:
+	if not minesweeper_cells.has(cell):
+		mines.erase_cell(cell)
+		return
+	var data: Dictionary = minesweeper_cells[cell]
+	match data["state"]:
+		CellState.COVERED:
+			mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+		CellState.FLAGGED:
+			mines.set_cell(cell, tile_id, MS_FLAG_ATLAS)
+		CellState.REVEALED:
+			if data["is_bomb"]:
+				mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
+			elif data["adjacent_bombs"] > 0:
+				mines.set_cell(cell, tile_id, MS_NUMBER_ATLAS[data["adjacent_bombs"]])
+			else:
+				mines.set_cell(cell, tile_id, MS_BLANK_ATLAS)
+
+
+func shift_minesweeper_data(cleared_row: int) -> void:
+	var new_cells: Dictionary = {}
+	for cell in minesweeper_cells:
+		if cell.y == cleared_row:
+			continue  # row was cleared, discard
+		elif cell.y < cleared_row:
+			new_cells[Vector2i(cell.x, cell.y + 1)] = minesweeper_cells[cell]
+		else:
+			new_cells[cell] = minesweeper_cells[cell]
+	minesweeper_cells = new_cells
+	recalculate_all_adjacent_bombs()
+
+
+func get_cell_from_mouse() -> Vector2i:
+	var local_pos: Vector2 = mines.get_local_mouse_position()
+	return mines.local_to_map(local_pos)
+
+
+func _input(event: InputEvent) -> void:
+	if not is_game_running:
+		return
+	if event.is_action_pressed("reveal"):
+		var cell: Vector2i = get_cell_from_mouse()
+		reveal_cell(cell)
+	elif event.is_action_pressed("flag"):
+		var cell: Vector2i = get_cell_from_mouse()
+		flag_cell(cell)
