@@ -68,6 +68,7 @@ const fast_fall_multiplier: float = 10.0
 var score: int
 const CLEAR_REWARD: int = 150
 var is_game_running: bool
+var first_tetromino_landed: bool = false
 
 var current_tetromino: Array
 var next_tetromino: Array
@@ -122,6 +123,7 @@ func start_game() -> void:
 	score = 0
 	$GameHUD/gameOverLabel.visible = false
 	is_game_running = true
+	first_tetromino_landed = false
 	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
@@ -208,6 +210,9 @@ func land_tetromino() -> void:
 		active.erase_cell(current_position + block)
 		board.set_cell(current_position + block, tile_id, piece_atlas)
 	transform_to_minesweeper(active_tetromino, current_position)
+	if not first_tetromino_landed:
+		first_tetromino_landed = true
+		reveal_bottom_edge_hints(active_tetromino, current_position)
 
 
 func clear_next_tetromino_preview() -> void: #cuidado con esto, el borrado es absoluto, no relativo
@@ -222,18 +227,29 @@ func check_rows() -> void:
 		for x in range(COLS):
 			if not is_within_bounds(Vector2i(x + 1, row)):
 				cells_filled += 1  
-		if cells_filled == COLS:
+		if cells_filled == COLS and is_minesweeper_row_cleared(row):
 			shift_rows(row)
 			score += CLEAR_REWARD
 			$GameHUD/scoreLabel.text = "Score: " + str(score)	
 		else:
 			row -= 1
 
+
+func is_minesweeper_row_cleared(row: int) -> bool:
+	for x in range(1, COLS + 1):
+		var cell := Vector2i(x, row)
+		if minesweeper_cells.has(cell) and minesweeper_cells[cell]["state"] == CellState.COVERED:
+			return false
+	return true
+
 func clear_board() -> void:
 	for y in range(ROWS):
 		for x in range(COLS):
 			board.erase_cell(Vector2i(x + 1, y + 1))
 			mines.erase_cell(Vector2i(x + 1, y + 1))
+	# Clear the hint row below the board
+	for x in range(COLS):
+		mines.erase_cell(Vector2i(x + 1, ROWS + 1))
 	minesweeper_cells.clear()
 
 func shift_rows(start_row: int) -> void:
@@ -311,6 +327,35 @@ func transform_to_minesweeper(tetromino_blocks: Array, pos: Vector2i) -> void:
 
 	for cell in absolute_cells:
 		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+
+
+# Reveals cells directly below each column of the first landed tetromino (y = ROWS + 1).
+# This gives the player a minesweeper starting point at the bottom edge of the board.
+func reveal_bottom_edge_hints(tetromino_blocks: Array, pos: Vector2i) -> void:
+	var columns: Dictionary = {}
+	for block in tetromino_blocks:
+		columns[(pos + block).x] = true
+
+	for x in columns:
+		var hint_cell := Vector2i(x, ROWS + 1)
+		if not minesweeper_cells.has(hint_cell):
+			minesweeper_cells[hint_cell] = {
+				"is_bomb": false,
+				"state": CellState.COVERED,
+				"adjacent_bombs": 0
+			}
+		# Count bombs among this hint cell's neighbors
+		var count: int = 0
+		for neighbor in get_neighbors(hint_cell):
+			if minesweeper_cells.has(neighbor) and minesweeper_cells[neighbor]["is_bomb"]:
+				count += 1
+		minesweeper_cells[hint_cell]["adjacent_bombs"] = count
+		# Directly reveal without flood-fill (avoids cascading into covered board cells)
+		minesweeper_cells[hint_cell]["state"] = CellState.REVEALED
+		if count > 0:
+			mines.set_cell(hint_cell, tile_id, MS_NUMBER_ATLAS[count])
+		else:
+			mines.set_cell(hint_cell, tile_id, MS_BLANK_ATLAS)
 
 
 func place_bombs(cells: Array[Vector2i]) -> void:
