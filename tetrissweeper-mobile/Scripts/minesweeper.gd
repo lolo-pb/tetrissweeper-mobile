@@ -424,6 +424,9 @@ func reveal_cell(cell: Vector2i) -> void:
 	if minesweeper_cells[cell]["is_bomb"]:
 		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
 		# TODO: handle bomb reveal consequence (game over, score penalty, etc.)
+		$GameHUD/gameOverLabel.visible = true
+		is_game_running = false
+
 	else:
 		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]
 		if adj > 0:
