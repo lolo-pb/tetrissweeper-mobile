@@ -6,53 +6,53 @@ var i_tetromino: Array = [
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(3, 1)], # 0 degrees
 	[Vector2i(2, 0), Vector2i(2, 1), Vector2i(2, 2), Vector2i(2, 3)], # 90 degrees
 	[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)], # 180 degrees
-	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3)]  # 270 degrees
+	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3)] # 270 degrees
 ]
  
 var t_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 180 degrees
-	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)]  # 270 degrees
+	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
  
 var o_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
-	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)]  # All rotations are the same
+	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)] # All rotations are the same
 ]
  
 var z_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(2, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 180 degrees
-	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)]  # 270 degrees
+	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)] # 270 degrees
 ]
  
 var s_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2), Vector2i(1, 2)], # 180 degrees
-	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)]  # 270 degrees
+	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
  
 var l_tetromino: Array = [
 	[Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2)], # 180 degrees
-	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)]  # 270 degrees
+	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
  
 var j_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(1, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(2, 2)], # 180 degrees
-	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 2), Vector2i(1, 2)]  # 270 degrees
+	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(0, 2), Vector2i(1, 2)] # 270 degrees
 ]
 
 var tetrominoes: Array = [i_tetromino, t_tetromino, o_tetromino, z_tetromino, s_tetromino, l_tetromino, j_tetromino]
-var all_tetrominoes: Array = tetrominoes.duplicate() 
+var all_tetrominoes: Array = tetrominoes.duplicate()
 
 const COLS: int = 10
 const ROWS: int = 20
@@ -82,11 +82,11 @@ var next_piece_atlas: Vector2i
 var rng = RandomNumberGenerator.new()
 
 @onready var board: TileMapLayer = $Board
-@onready var active: TileMapLayer = $Active 
+@onready var active: TileMapLayer = $Active
 @onready var mines: TileMapLayer = $Mines
 
 # --- Minesweeper state ---
-enum CellState { COVERED, REVEALED, FLAGGED }
+enum CellState {COVERED, REVEALED, FLAGGED}
 
 # Minesweeper tile atlas coordinates for the Mines TileMapLayer
 const MS_COVERED_ATLAS: Vector2i = Vector2i(0, 0)
@@ -97,15 +97,15 @@ const MS_BOMB_RED_ATLAS: Vector2i = Vector2i(0, 3)
 const MS_BOMB_CROSSED_ATLAS: Vector2i = Vector2i(1, 3)
 # Adjacent bomb numbers 1-8:
 const MS_NUMBER_ATLAS: Array[Vector2i] = [
-	Vector2i(0, 0),  # unused index 0
-	Vector2i(0, 1),  # 1
-	Vector2i(1, 1),  # 2
-	Vector2i(2, 1),  # 3
-	Vector2i(3, 1),  # 4
-	Vector2i(0, 2),  # 5
-	Vector2i(1, 2),  # 6
-	Vector2i(2, 2),  # 7
-	Vector2i(3, 2),  # 8
+	Vector2i(0, 0), # unused index 0
+	Vector2i(0, 1), # 1
+	Vector2i(1, 1), # 2
+	Vector2i(2, 1), # 3
+	Vector2i(3, 1), # 4
+	Vector2i(0, 2), # 5
+	Vector2i(1, 2), # 6
+	Vector2i(2, 2), # 7
+	Vector2i(3, 2), # 8
 ]
 
 const BOMBS_PER_PIECE: int = 1
@@ -153,11 +153,11 @@ func initialize_tetromino() -> void:
 
 func render_tetromino(tetromino: Array, pos: Vector2i, atlas: Vector2i) -> void:
 	for block in tetromino:
-		active.set_cell(pos + block, tile_id, atlas) 
+		active.set_cell(pos + block, tile_id, atlas)
 
 func clear_tetromino() -> void:
 	for block in active_tetromino:
-		active.erase_cell(current_position + block) 
+		active.erase_cell(current_position + block)
 
 
 func _physics_process(delta: float) -> void:
@@ -190,7 +190,7 @@ func _physics_process(delta: float) -> void:
 
 func move_tetromino(dir: Vector2i) -> void:
 	if is_valid_move(dir):
-		clear_tetromino()# H
+		clear_tetromino() # H
 		current_position += dir
 		render_tetromino(active_tetromino, current_position, piece_atlas)
 	else:
@@ -212,25 +212,25 @@ func land_tetromino() -> void:
 	transform_to_minesweeper(active_tetromino, current_position)
 	if not first_tetromino_landed:
 		first_tetromino_landed = true
-		reveal_bottom_edge_hints(active_tetromino, current_position)
+		reveal_all_bottom_edge_hints()
 
 
-func clear_next_tetromino_preview() -> void: #cuidado con esto, el borrado es absoluto, no relativo
+func clear_next_tetromino_preview() -> void: # cuidado con esto, el borrado es absoluto, no relativo
 	for y in range(4):
 		for x in range(4):
 			active.erase_cell(Vector2i(5, -20) + Vector2i(x, y))
 
 func check_rows() -> void:
 	var row: int = ROWS
-	while  row > 0:
+	while row > 0:
 		var cells_filled: int = 0
 		for x in range(COLS):
 			if not is_within_bounds(Vector2i(x + 1, row)):
-				cells_filled += 1  
+				cells_filled += 1
 		if cells_filled == COLS and is_minesweeper_row_cleared(row):
 			shift_rows(row)
 			score += CLEAR_REWARD
-			$GameHUD/scoreLabel.text = "Score: " + str(score)	
+			$GameHUD/scoreLabel.text = "Score: " + str(score)
 		else:
 			row -= 1
 
@@ -285,7 +285,7 @@ func is_valid_move(dir: Vector2i) -> bool:
 	return true
 
 func is_within_bounds(pos: Vector2i) -> bool:
-	if pos.x < 1 or pos.x > COLS or pos.y < 1 or pos.y > ROWS:	
+	if pos.x < 1 or pos.x > COLS or pos.y < 1 or pos.y > ROWS:
 		return false
 
 	var tile_id = board.get_cell_source_id(pos)
@@ -301,7 +301,7 @@ func is_game_over() -> void:
 func rotate_tetromino() -> void:
 	if is_valid_rotation():
 		clear_tetromino()
-		rotation_index = (rotation_index - 1) % 4
+		rotation_index = (rotation_index + 1) % 4
 		active_tetromino = current_tetromino[rotation_index]
 		render_tetromino(active_tetromino, current_position, piece_atlas)
 
@@ -329,15 +329,9 @@ func transform_to_minesweeper(tetromino_blocks: Array, pos: Vector2i) -> void:
 		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
 
 
-# Reveals cells directly below each column of the first landed tetromino (y = ROWS + 1).
-# This gives the player a minesweeper starting point at the bottom edge of the board.
-func reveal_bottom_edge_hints(tetromino_blocks: Array, pos: Vector2i) -> void:
-	var columns: Dictionary = {}
-	for block in tetromino_blocks:
-		columns[(pos + block).x] = true
-
-	for x in columns:
-		var hint_cell := Vector2i(x, ROWS + 1)
+func reveal_all_bottom_edge_hints() -> void:
+	for i in range(1, COLS + 1):
+		var hint_cell := Vector2i(i, ROWS + 1)
 		if not minesweeper_cells.has(hint_cell):
 			minesweeper_cells[hint_cell] = {
 				"is_bomb": false,
@@ -356,7 +350,6 @@ func reveal_bottom_edge_hints(tetromino_blocks: Array, pos: Vector2i) -> void:
 			mines.set_cell(hint_cell, tile_id, MS_NUMBER_ATLAS[count])
 		else:
 			mines.set_cell(hint_cell, tile_id, MS_BLANK_ATLAS)
-
 
 func place_bombs(cells: Array[Vector2i]) -> void:
 	var bomb_count: int = mini(BOMBS_PER_PIECE, cells.size())
@@ -414,8 +407,8 @@ func recalculate_all_adjacent_bombs() -> void:
 func get_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return [
 		cell + Vector2i(-1, -1), cell + Vector2i(0, -1), cell + Vector2i(1, -1),
-		cell + Vector2i(-1,  0),                          cell + Vector2i(1,  0),
-		cell + Vector2i(-1,  1), cell + Vector2i(0,  1), cell + Vector2i(1,  1)
+		cell + Vector2i(-1, 0), cell + Vector2i(1, 0),
+		cell + Vector2i(-1, 1), cell + Vector2i(0, 1), cell + Vector2i(1, 1)
 	]
 
 
@@ -476,7 +469,7 @@ func shift_minesweeper_data(cleared_row: int) -> void:
 	var new_cells: Dictionary = {}
 	for cell in minesweeper_cells:
 		if cell.y == cleared_row:
-			continue  # row was cleared, discard
+			continue # row was cleared, discard
 		elif cell.y < cleared_row:
 			new_cells[Vector2i(cell.x, cell.y + 1)] = minesweeper_cells[cell]
 		else:
