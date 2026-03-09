@@ -186,6 +186,8 @@ func _physics_process(delta: float) -> void:
 		if fall_timer >= current_fall_interval:
 			move_tetromino(Vector2i.DOWN)
 			fall_timer = 0
+		
+		check_rows()
 
 
 func move_tetromino(dir: Vector2i) -> void:
@@ -196,7 +198,6 @@ func move_tetromino(dir: Vector2i) -> void:
 	else:
 		if dir == Vector2i.DOWN:
 			land_tetromino()
-			check_rows()
 			current_tetromino = next_tetromino
 			piece_atlas = next_piece_atlas
 			next_tetromino = choose_tetromino()
