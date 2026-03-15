@@ -65,6 +65,11 @@ var fall_timer: float = 0.0
 var fall_interval: float = 1.0
 const fast_fall_multiplier: float = 10.0
 
+# Holding controls
+var move_timer: float = 0.0
+var move_interval: float = 0.15 # Speed of movement while holding (seconds)
+var active_dir: Vector2i = Vector2i.ZERO
+
 var score: int
 const CLEAR_REWARD: int = 150
 var is_game_running: bool
@@ -162,18 +167,25 @@ func clear_tetromino() -> void:
 
 func _physics_process(delta: float) -> void:
 	if is_game_running:
-		var move_direction = Vector2i.ZERO
-
 		if Input.is_action_just_pressed("ui_left"):
-			move_direction = Vector2i.LEFT
-		elif Input.is_action_just_pressed("ui_down"):
-			move_direction = Vector2i.DOWN
+			move_tetromino(Vector2i.LEFT)
+			active_dir = Vector2i.LEFT
+			move_timer = 0.0
 		elif Input.is_action_just_pressed("ui_right"):
-			move_direction = Vector2i.RIGHT
-
+			move_tetromino(Vector2i.RIGHT)
+			active_dir = Vector2i.RIGHT
+			move_timer = 0.0
 		
-		if move_direction != Vector2i.ZERO:
-			move_tetromino(move_direction)
+		if Input.is_action_just_released("ui_left") and active_dir == Vector2i.LEFT:
+			active_dir = Vector2i.ZERO
+		if Input.is_action_just_released("ui_right") and active_dir == Vector2i.RIGHT:
+			active_dir = Vector2i.ZERO
+
+		if active_dir != Vector2i.ZERO:
+			move_timer += delta
+			if move_timer >= move_interval:
+				move_tetromino(active_dir)
+				move_timer = 0.0
 
 		if Input.is_action_just_pressed("ui_up"):
 			rotate_tetromino()
@@ -192,7 +204,7 @@ func _physics_process(delta: float) -> void:
 
 func move_tetromino(dir: Vector2i) -> void:
 	if is_valid_move(dir):
-		clear_tetromino() # H
+		clear_tetromino()
 		current_position += dir
 		render_tetromino(active_tetromino, current_position, piece_atlas)
 	else:
@@ -205,6 +217,9 @@ func move_tetromino(dir: Vector2i) -> void:
 			clear_next_tetromino_preview()
 			initialize_tetromino()
 			is_game_over()
+			# Reset movement state when a new piece spawns
+			active_dir = Vector2i.ZERO
+			move_timer = 0.0
 
 func land_tetromino() -> void:
 	for block in active_tetromino:
@@ -278,6 +293,8 @@ func shift_rows(start_row: int) -> void:
 		mines.erase_cell(Vector2i(x + 1, 1))
 	# Rebuild minesweeper_cells dictionary after shift
 	shift_minesweeper_data(start_row)
+	for x in range(1, COLS + 1): # re calcla los numeros de abajo
+		render_minesweeper_cell(Vector2i(x, ROWS + 1))
 
 func is_valid_move(dir: Vector2i) -> bool:
 	for block in active_tetromino:
