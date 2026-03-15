@@ -306,8 +306,8 @@ func is_within_bounds(pos: Vector2i) -> bool:
 	if pos.x < 1 or pos.x > COLS or pos.y < 1 or pos.y > ROWS:
 		return false
 
-	var tile_id = board.get_cell_source_id(pos)
-	return tile_id == -1
+	var title_id_ = board.get_cell_source_id(pos)
+	return title_id_ == -1
 
 func is_game_over() -> void:
 	for x in active_tetromino:
