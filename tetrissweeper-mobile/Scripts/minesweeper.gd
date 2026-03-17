@@ -89,6 +89,11 @@ var rng = RandomNumberGenerator.new()
 @onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active
 @onready var mines: TileMapLayer = $Mines
+@onready var hud: CanvasLayer = $GameHUD
+@onready var score_label: Label = $GameHUD/scoreLabel
+@onready var main_menu: Control = $GameHUD/MainMenu
+@onready var game_over_menu: Control = $GameHUD/GameOverMenu
+@onready var final_score_label: Label = $GameHUD/GameOverMenu/Card/FinalScoreLabel
 
 # --- Minesweeper state ---
 enum CellState {COVERED, REVEALED, FLAGGED}
@@ -120,24 +125,68 @@ var minesweeper_cells: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	start_game()
+	var start_button: Button = hud.get_node("MainMenu/Card/StartButton")
+	var retry_button: Button = hud.get_node("GameOverMenu/Card/RetryButton")
+	var main_menu_button: Button = hud.get_node("GameOverMenu/Card/MainMenuButton")
+	start_button.pressed.connect(_on_start_button_pressed)
+	retry_button.pressed.connect(_on_retry_button_pressed)
+	main_menu_button.pressed.connect(_on_main_menu_button_pressed)
+	show_main_menu()
 
 
 func start_game() -> void:
 	rng.randomize()
 	score = 0
-	$GameHUD/gameOverLabel.visible = false
 	is_game_running = true
 	first_tetromino_landed = false
+	tetrominoes = all_tetrominoes.duplicate()
+	rotation_index = 0
+	fall_timer = 0.0
+	move_timer = 0.0
+	active_dir = Vector2i.ZERO
 	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
+	score_label.text = "Score: 0"
+	main_menu.visible = false
+	game_over_menu.visible = false
 	current_tetromino = choose_tetromino()
 	piece_atlas = Vector2i(all_tetrominoes.find(current_tetromino), 0)
 	next_tetromino = choose_tetromino()
 	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
 	initialize_tetromino()
+
+
+func show_main_menu() -> void:
+	is_game_running = false
+	first_tetromino_landed = false
+	rotation_index = 0
+	clear_tetromino()
+	clear_board()
+	clear_next_tetromino_preview()
+	score = 0
+	score_label.text = "Score: 0"
+	main_menu.visible = true
+	game_over_menu.visible = false
+
+
+func show_game_over_menu() -> void:
+	is_game_running = false
+	final_score_label.text = "Score: " + str(score)
+	game_over_menu.visible = true
+
+
+func _on_start_button_pressed() -> void:
+	start_game()
+
+
+func _on_retry_button_pressed() -> void:
+	start_game()
+
+
+func _on_main_menu_button_pressed() -> void:
+	show_main_menu()
 
 func choose_tetromino() -> Array:
 	var selected_tetromino: Array
@@ -246,7 +295,7 @@ func check_rows() -> void:
 		if cells_filled == COLS and is_minesweeper_row_cleared(row):
 			shift_rows(row)
 			score += CLEAR_REWARD
-			$GameHUD/scoreLabel.text = "Score: " + str(score)
+			score_label.text = "Score: " + str(score)
 		else:
 			row -= 1
 
@@ -313,8 +362,8 @@ func is_game_over() -> void:
 	for x in active_tetromino:
 		if not is_within_bounds(current_position + x):
 			land_tetromino()
-			$GameHUD/gameOverLabel.visible = true
-			is_game_running = false
+			show_game_over_menu()
+			return
 
 func rotate_tetromino() -> void:
 	if is_valid_rotation():
@@ -441,8 +490,7 @@ func reveal_cell(cell: Vector2i) -> void:
 	if minesweeper_cells[cell]["is_bomb"]:
 		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
 		# TODO: handle bomb reveal consequence (game over, score penalty, etc.)
-		$GameHUD/gameOverLabel.visible = true
-		is_game_running = false
+		show_game_over_menu()
 
 	else:
 		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]

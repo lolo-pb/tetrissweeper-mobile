@@ -2,6 +2,15 @@
 
 [node name="GameHUD" type="CanvasLayer" unique_id=2032419917]
 
+[node name="TitleLabel" type="Label" parent="." unique_id=1001]
+offset_left = 122.0
+offset_top = 70.0
+offset_right = 418.0
+offset_bottom = 122.0
+theme_override_font_sizes/font_size = 36
+text = "Tetrissweeper"
+horizontal_alignment = 1
+
 [node name="Panel" type="Panel" parent="." unique_id=1340875181]
 offset_left = 175.0
 offset_top = 250.0
@@ -14,20 +23,148 @@ offset_left = 177.0
 offset_top = 216.0
 offset_right = 353.0
 offset_bottom = 248.0
+theme_override_font_sizes/font_size = 20
 text = "Next"
+horizontal_alignment = 1
 
 [node name="scoreLabel" type="Label" parent="." unique_id=2045640555]
-offset_left = 252.0
-offset_top = 407.0
-offset_right = 313.0
-offset_bottom = 430.0
+offset_left = 193.0
+offset_top = 418.0
+offset_right = 357.0
+offset_bottom = 450.0
+theme_override_font_sizes/font_size = 22
 text = "Score: 0"
+horizontal_alignment = 1
 
-[node name="gameOverLabel" type="Label" parent="." unique_id=121004144]
-offset_left = 196.0
-offset_top = 553.0
-offset_right = 379.0
-offset_bottom = 598.0
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "Game Over!"
+[node name="MainMenu" type="Control" parent="." unique_id=1002]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="MainMenu" unique_id=1003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0392157, 0.054902, 0.101961, 0.8)
+
+[node name="Card" type="Panel" parent="MainMenu" unique_id=1004]
+custom_minimum_size = Vector2(340, 280)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -180.0
+offset_right = 170.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuTitle" type="Label" parent="MainMenu/Card" unique_id=1005]
+offset_left = 30.0
+offset_top = 28.0
+offset_right = 310.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 28
+text = "Main Menu"
+horizontal_alignment = 1
+
+[node name="MenuSubtitle" type="Label" parent="MainMenu/Card" unique_id=1006]
+offset_left = 34.0
+offset_top = 86.0
+offset_right = 306.0
+offset_bottom = 154.0
+text = "Drop tetrominoes, reveal safe cells,\nand clear rows once every covered tile is solved."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StartButton" type="Button" parent="MainMenu/Card" unique_id=1007]
+offset_left = 70.0
+offset_top = 188.0
+offset_right = 270.0
+offset_bottom = 236.0
+theme_override_font_sizes/font_size = 22
+text = "Start Game"
+
+[node name="ControlsLabel" type="Label" parent="MainMenu/Card" unique_id=1008]
+offset_left = 24.0
+offset_top = 246.0
+offset_right = 316.0
+offset_bottom = 270.0
+text = "Move: arrows   Rotate: up   Reveal: left click   Flag: right click"
+horizontal_alignment = 1
+
+[node name="GameOverMenu" type="Control" parent="." unique_id=1009]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="GameOverMenu" unique_id=1010]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.101961, 0.0392157, 0.0392157, 0.82)
+
+[node name="Card" type="Panel" parent="GameOverMenu" unique_id=1011]
+custom_minimum_size = Vector2(320, 250)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -150.0
+offset_right = 160.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="gameOverLabel" type="Label" parent="GameOverMenu/Card" unique_id=121004144]
+offset_left = 36.0
+offset_top = 28.0
+offset_right = 284.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 30
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="GameOverMenu/Card" unique_id=1012]
+offset_left = 52.0
+offset_top = 92.0
+offset_right = 268.0
+offset_bottom = 124.0
+theme_override_font_sizes/font_size = 22
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="GameOverMenu/Card" unique_id=1013]
+offset_left = 60.0
+offset_top = 150.0
+offset_right = 260.0
+offset_bottom = 198.0
+theme_override_font_sizes/font_size = 22
+text = "Retry"
+
+[node name="MainMenuButton" type="Button" parent="GameOverMenu/Card" unique_id=1014]
+offset_left = 60.0
+offset_top = 206.0
+offset_right = 260.0
+offset_bottom = 254.0
+theme_override_font_sizes/font_size = 20
+text = "Main Menu"
