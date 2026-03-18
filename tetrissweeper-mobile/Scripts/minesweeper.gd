@@ -122,6 +122,7 @@ var board_touch_hold_triggered: bool = false
 @onready var highscore_label: Label = $GameHUD/HighScoreLabel
 @onready var highscore_gameover_label: Label = $GameHUD/GameOverMenu/Card/HighScoreGameOver
 @onready var menu_highscore_label: Label = $GameHUD/MainMenu/Card/MenuHighScore
+@onready var touch_controls: Control = $GameHUD/TouchControls
 
 # --- Minesweeper state ---
 enum CellState {COVERED, REVEALED, FLAGGED}
@@ -210,6 +211,7 @@ func start_game() -> void:
 	main_menu.visible = false
 	game_over_menu.visible = false
 	pause_menu.visible = false
+	touch_controls.visible = true
 	current_tetromino = choose_tetromino()
 	piece_atlas = Vector2i(all_tetrominoes.find(current_tetromino), 0)
 	next_tetromino = choose_tetromino()
@@ -234,6 +236,7 @@ func show_main_menu() -> void:
 	main_menu.visible = true
 	game_over_menu.visible = false
 	pause_menu.visible = false
+	touch_controls.visible = false
 	menu_highscore_label.text = "Best: " + str(highscore)
 
 
@@ -245,6 +248,7 @@ func show_game_over_menu() -> void:
 	final_score_label.text = "Score: " + str(score)
 	highscore_gameover_label.text = "Best: " + str(highscore)
 	game_over_menu.visible = true
+	touch_controls.visible = true
 
 
 func _on_start_button_pressed() -> void:
@@ -273,11 +277,13 @@ func pause_game() -> void:
 	touch_down_held = false
 	reset_board_touch_state()
 	pause_menu.visible = true
+	touch_controls.visible = false
 
 
 func resume_game() -> void:
 	is_paused = false
 	pause_menu.visible = false
+	touch_controls.visible = true
 
 
 func _on_resume_button_pressed() -> void:
