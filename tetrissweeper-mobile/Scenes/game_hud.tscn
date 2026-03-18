@@ -13,10 +13,10 @@ text = "Tetrissweeper"
 horizontal_alignment = 1
 
 [node name="HoldPanel" type="Panel" parent="."]
-offset_left = 28.0
-offset_top = 54.0
-offset_right = 128.0
-offset_bottom = 154.0
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 138.0
+offset_bottom = 164.0
 size_flags_horizontal = 4
 
 [node name="holdLabel" type="Label" parent="."]
@@ -29,10 +29,10 @@ text = "Hold"
 horizontal_alignment = 1
 
 [node name="Panel" type="Panel" parent="." unique_id=1340875181]
-offset_left = 228.0
-offset_top = 54.0
-offset_right = 328.0
-offset_bottom = 154.0
+offset_left = 208.0
+offset_top = 34.0
+offset_right = 338.0
+offset_bottom = 164.0
 size_flags_horizontal = 4
 
 [node name="next" type="Label" parent="." unique_id=1715811688]
