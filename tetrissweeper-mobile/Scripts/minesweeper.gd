@@ -8,42 +8,42 @@ var i_tetromino: Array = [
 	[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3)] # 270 degrees
 ]
- 
+
 var t_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var o_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)] # All rotations are the same
 ]
- 
+
 var z_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(2, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)] # 270 degrees
 ]
- 
+
 var s_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2), Vector2i(1, 2)], # 180 degrees
 	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var l_tetromino: Array = [
 	[Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2)], # 180 degrees
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var j_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(1, 1), Vector2i(1, 2)], # 90 degrees
@@ -86,6 +86,26 @@ var next_piece_atlas: Vector2i
 
 var rng = RandomNumberGenerator.new()
 
+# Hold queue
+var held_tetromino: Array = []
+var held_piece_atlas: Vector2i
+var can_hold: bool = true
+const HOLD_PREVIEW_POS: Vector2i = Vector2i(-5, -20)
+const NEXT_PREVIEW_POS: Vector2i = Vector2i(5, -20)
+
+# Pause
+var is_paused: bool = false
+
+# Highscore
+var highscore: int = 0
+const SAVE_PATH: String = "user://highscore.cfg"
+
+# Flag mode for touch
+var flag_mode: bool = false
+
+# Touch soft drop
+var touch_down_held: bool = false
+
 @onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active
 @onready var mines: TileMapLayer = $Mines
@@ -94,6 +114,11 @@ var rng = RandomNumberGenerator.new()
 @onready var main_menu: Control = $GameHUD/MainMenu
 @onready var game_over_menu: Control = $GameHUD/GameOverMenu
 @onready var final_score_label: Label = $GameHUD/GameOverMenu/Card/FinalScoreLabel
+@onready var pause_menu: Control = $GameHUD/PauseMenu
+@onready var highscore_label: Label = $GameHUD/HighScoreLabel
+@onready var highscore_gameover_label: Label = $GameHUD/GameOverMenu/Card/HighScoreGameOver
+@onready var btn_flag: Button = $GameHUD/TouchControls/BtnFlag
+@onready var menu_highscore_label: Label = $GameHUD/MainMenu/Card/MenuHighScore
 
 # --- Minesweeper state ---
 enum CellState {COVERED, REVEALED, FLAGGED}
@@ -125,12 +150,35 @@ var minesweeper_cells: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Menu buttons
 	var start_button: Button = hud.get_node("MainMenu/Card/StartButton")
 	var retry_button: Button = hud.get_node("GameOverMenu/Card/RetryButton")
 	var main_menu_button: Button = hud.get_node("GameOverMenu/Card/MainMenuButton")
 	start_button.pressed.connect(_on_start_button_pressed)
 	retry_button.pressed.connect(_on_retry_button_pressed)
 	main_menu_button.pressed.connect(_on_main_menu_button_pressed)
+
+	# Pause menu buttons
+	var resume_button: Button = hud.get_node("PauseMenu/Card/ResumeButton")
+	var pause_mm_button: Button = hud.get_node("PauseMenu/Card/PauseMainMenuButton")
+	resume_button.pressed.connect(_on_resume_button_pressed)
+	pause_mm_button.pressed.connect(_on_pause_main_menu_pressed)
+
+	# Touch controls
+	var tc = hud.get_node("TouchControls")
+	tc.get_node("BtnLeft").button_down.connect(_on_btn_left_down)
+	tc.get_node("BtnLeft").button_up.connect(_on_btn_left_up)
+	tc.get_node("BtnRight").button_down.connect(_on_btn_right_down)
+	tc.get_node("BtnRight").button_up.connect(_on_btn_right_up)
+	tc.get_node("BtnDown").button_down.connect(_on_btn_down_down)
+	tc.get_node("BtnDown").button_up.connect(_on_btn_down_up)
+	tc.get_node("BtnRotate").pressed.connect(_on_btn_rotate_pressed)
+	tc.get_node("BtnHardDrop").pressed.connect(_on_btn_hard_drop_pressed)
+	tc.get_node("BtnHold").pressed.connect(_on_btn_hold_pressed)
+	tc.get_node("BtnFlag").pressed.connect(_on_btn_flag_pressed)
+	tc.get_node("BtnPause").pressed.connect(_on_btn_pause_pressed)
+
+	load_highscore()
 	show_main_menu()
 
 
@@ -138,19 +186,29 @@ func start_game() -> void:
 	rng.randomize()
 	score = 0
 	is_game_running = true
+	is_paused = false
 	first_tetromino_landed = false
 	tetrominoes = all_tetrominoes.duplicate()
 	rotation_index = 0
 	fall_timer = 0.0
+	fall_interval = 1.0
 	move_timer = 0.0
 	active_dir = Vector2i.ZERO
+	held_tetromino = []
+	can_hold = true
+	flag_mode = false
+	touch_down_held = false
+	btn_flag.text = "Reveal"
 	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
+	clear_hold_preview()
 	score_label.text = "Score: 0"
+	highscore_label.text = "Best: " + str(highscore)
 	main_menu.visible = false
 	game_over_menu.visible = false
+	pause_menu.visible = false
 	current_tetromino = choose_tetromino()
 	piece_atlas = Vector2i(all_tetrominoes.find(current_tetromino), 0)
 	next_tetromino = choose_tetromino()
@@ -160,20 +218,29 @@ func start_game() -> void:
 
 func show_main_menu() -> void:
 	is_game_running = false
+	is_paused = false
 	first_tetromino_landed = false
 	rotation_index = 0
+	touch_down_held = false
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
+	clear_hold_preview()
 	score = 0
 	score_label.text = "Score: 0"
+	highscore_label.text = "Best: " + str(highscore)
 	main_menu.visible = true
 	game_over_menu.visible = false
+	pause_menu.visible = false
+	menu_highscore_label.text = "Best: " + str(highscore)
 
 
 func show_game_over_menu() -> void:
 	is_game_running = false
+	touch_down_held = false
+	save_highscore()
 	final_score_label.text = "Score: " + str(score)
+	highscore_gameover_label.text = "Best: " + str(highscore)
 	game_over_menu.visible = true
 
 
@@ -187,6 +254,112 @@ func _on_retry_button_pressed() -> void:
 
 func _on_main_menu_button_pressed() -> void:
 	show_main_menu()
+
+
+# --- Pause ---
+
+func toggle_pause() -> void:
+	if is_paused:
+		resume_game()
+	else:
+		pause_game()
+
+
+func pause_game() -> void:
+	is_paused = true
+	touch_down_held = false
+	pause_menu.visible = true
+
+
+func resume_game() -> void:
+	is_paused = false
+	pause_menu.visible = false
+
+
+func _on_resume_button_pressed() -> void:
+	resume_game()
+
+
+func _on_pause_main_menu_pressed() -> void:
+	resume_game()
+	show_main_menu()
+
+
+# --- Highscore ---
+
+func load_highscore() -> void:
+	var config = ConfigFile.new()
+	if config.load(SAVE_PATH) == OK:
+		highscore = config.get_value("game", "highscore", 0)
+
+
+func save_highscore() -> void:
+	if score > highscore:
+		highscore = score
+	var config = ConfigFile.new()
+	config.set_value("game", "highscore", highscore)
+	config.save(SAVE_PATH)
+
+
+# --- Hold queue ---
+
+func hold_tetromino() -> void:
+	if not can_hold:
+		return
+	can_hold = false
+	clear_tetromino()
+	rotation_index = 0
+	if held_tetromino.is_empty():
+		held_tetromino = current_tetromino
+		held_piece_atlas = piece_atlas
+		current_tetromino = next_tetromino
+		piece_atlas = next_piece_atlas
+		next_tetromino = choose_tetromino()
+		next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
+		clear_next_tetromino_preview()
+	else:
+		var temp_tetromino = current_tetromino
+		var temp_atlas = piece_atlas
+		current_tetromino = held_tetromino
+		piece_atlas = held_piece_atlas
+		held_tetromino = temp_tetromino
+		held_piece_atlas = temp_atlas
+	initialize_tetromino()
+	render_hold_preview()
+
+
+func render_hold_preview() -> void:
+	clear_hold_preview()
+	if held_tetromino.is_empty():
+		return
+	render_tetromino(held_tetromino[0], HOLD_PREVIEW_POS, held_piece_atlas)
+
+
+func clear_hold_preview() -> void:
+	for y in range(4):
+		for x in range(4):
+			active.erase_cell(HOLD_PREVIEW_POS + Vector2i(x, y))
+
+
+# --- Hard drop ---
+
+func hard_drop() -> void:
+	clear_tetromino()
+	while is_valid_move(Vector2i.DOWN):
+		current_position += Vector2i.DOWN
+	render_tetromino(active_tetromino, current_position, piece_atlas)
+	land_tetromino()
+	spawn_next_piece()
+
+
+# --- Speed scaling by score ---
+
+func get_current_fall_interval() -> float:
+	var level: int = score / 500
+	return max(0.15, 1.0 - level * 0.1)
+
+
+# --- Tetromino logic ---
 
 func choose_tetromino() -> Array:
 	var selected_tetromino: Array
@@ -203,7 +376,7 @@ func initialize_tetromino() -> void:
 	current_position = START_POSITION
 	active_tetromino = current_tetromino[rotation_index]
 	render_tetromino(active_tetromino, current_position, piece_atlas)
-	render_tetromino(next_tetromino[0], Vector2i(5, -20), next_piece_atlas)
+	render_tetromino(next_tetromino[0], NEXT_PREVIEW_POS, next_piece_atlas)
 
 func render_tetromino(tetromino: Array, pos: Vector2i, atlas: Vector2i) -> void:
 	for block in tetromino:
@@ -213,9 +386,30 @@ func clear_tetromino() -> void:
 	for block in active_tetromino:
 		active.erase_cell(current_position + block)
 
+func spawn_next_piece() -> void:
+	current_tetromino = next_tetromino
+	piece_atlas = next_piece_atlas
+	next_tetromino = choose_tetromino()
+	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
+	clear_next_tetromino_preview()
+	rotation_index = 0
+	can_hold = true
+	fall_timer = 0.0
+	initialize_tetromino()
+	is_game_over()
+	active_dir = Vector2i.ZERO
+	move_timer = 0.0
+
 
 func _physics_process(delta: float) -> void:
 	if is_game_running:
+		if Input.is_action_just_pressed("pause"):
+			toggle_pause()
+			return
+
+		if is_paused:
+			return
+
 		if Input.is_action_just_pressed("ui_left"):
 			move_tetromino(Vector2i.LEFT)
 			active_dir = Vector2i.LEFT
@@ -224,7 +418,7 @@ func _physics_process(delta: float) -> void:
 			move_tetromino(Vector2i.RIGHT)
 			active_dir = Vector2i.RIGHT
 			move_timer = 0.0
-		
+
 		if Input.is_action_just_released("ui_left") and active_dir == Vector2i.LEFT:
 			active_dir = Vector2i.ZERO
 		if Input.is_action_just_released("ui_right") and active_dir == Vector2i.RIGHT:
@@ -239,15 +433,23 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("ui_up"):
 			rotate_tetromino()
 
-		var current_fall_interval = fall_interval
-		if Input.is_action_pressed("ui_down"):
+		if Input.is_action_just_pressed("hard_drop"):
+			hard_drop()
+			return
+
+		if Input.is_action_just_pressed("hold_piece"):
+			hold_tetromino()
+			return
+
+		var current_fall_interval = get_current_fall_interval()
+		if Input.is_action_pressed("ui_down") or touch_down_held:
 			current_fall_interval /= fast_fall_multiplier
 
 		fall_timer += delta
 		if fall_timer >= current_fall_interval:
 			move_tetromino(Vector2i.DOWN)
 			fall_timer = 0
-		
+
 		check_rows()
 
 
@@ -259,16 +461,7 @@ func move_tetromino(dir: Vector2i) -> void:
 	else:
 		if dir == Vector2i.DOWN:
 			land_tetromino()
-			current_tetromino = next_tetromino
-			piece_atlas = next_piece_atlas
-			next_tetromino = choose_tetromino()
-			next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
-			clear_next_tetromino_preview()
-			initialize_tetromino()
-			is_game_over()
-			# Reset movement state when a new piece spawns
-			active_dir = Vector2i.ZERO
-			move_timer = 0.0
+			spawn_next_piece()
 
 func land_tetromino() -> void:
 	for block in active_tetromino:
@@ -280,10 +473,10 @@ func land_tetromino() -> void:
 		reveal_all_bottom_edge_hints()
 
 
-func clear_next_tetromino_preview() -> void: # cuidado con esto, el borrado es absoluto, no relativo
+func clear_next_tetromino_preview() -> void:
 	for y in range(4):
 		for x in range(4):
-			active.erase_cell(Vector2i(5, -20) + Vector2i(x, y))
+			active.erase_cell(NEXT_PREVIEW_POS + Vector2i(x, y))
 
 func check_rows() -> void:
 	var row: int = ROWS
@@ -380,6 +573,70 @@ func is_valid_rotation() -> bool:
 		if not is_within_bounds(current_position + block):
 			return false
 	return true
+
+
+# --- Touch control handlers ---
+
+func _on_btn_left_down() -> void:
+	if not is_game_running or is_paused:
+		return
+	move_tetromino(Vector2i.LEFT)
+	active_dir = Vector2i.LEFT
+	move_timer = 0.0
+
+
+func _on_btn_left_up() -> void:
+	if active_dir == Vector2i.LEFT:
+		active_dir = Vector2i.ZERO
+
+
+func _on_btn_right_down() -> void:
+	if not is_game_running or is_paused:
+		return
+	move_tetromino(Vector2i.RIGHT)
+	active_dir = Vector2i.RIGHT
+	move_timer = 0.0
+
+
+func _on_btn_right_up() -> void:
+	if active_dir == Vector2i.RIGHT:
+		active_dir = Vector2i.ZERO
+
+
+func _on_btn_down_down() -> void:
+	touch_down_held = true
+
+
+func _on_btn_down_up() -> void:
+	touch_down_held = false
+
+
+func _on_btn_rotate_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	rotate_tetromino()
+
+
+func _on_btn_hard_drop_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	hard_drop()
+
+
+func _on_btn_hold_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	hold_tetromino()
+
+
+func _on_btn_flag_pressed() -> void:
+	flag_mode = !flag_mode
+	btn_flag.text = "Flag" if flag_mode else "Reveal"
+
+
+func _on_btn_pause_pressed() -> void:
+	if is_game_running:
+		toggle_pause()
 
 
 # --- Minesweeper functions ---
@@ -489,7 +746,6 @@ func reveal_cell(cell: Vector2i) -> void:
 
 	if minesweeper_cells[cell]["is_bomb"]:
 		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
-		# TODO: handle bomb reveal consequence (game over, score penalty, etc.)
 		show_game_over_menu()
 
 	else:
@@ -553,11 +809,14 @@ func get_cell_from_mouse() -> Vector2i:
 
 
 func _input(event: InputEvent) -> void:
-	if not is_game_running:
+	if not is_game_running or is_paused:
 		return
 	if event.is_action_pressed("reveal"):
 		var cell: Vector2i = get_cell_from_mouse()
-		reveal_cell(cell)
+		if flag_mode:
+			flag_cell(cell)
+		else:
+			reveal_cell(cell)
 	elif event.is_action_pressed("flag"):
 		var cell: Vector2i = get_cell_from_mouse()
 		flag_cell(cell)
