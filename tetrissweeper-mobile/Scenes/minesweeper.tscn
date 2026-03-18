@@ -82,13 +82,15 @@ texture = ExtResource("1_22q3e")
 sources/0 = SubResource("TileSetAtlasSource_x0aub")
 
 [node name="Node2D" type="Node2D" unique_id=1642297842]
-position = Vector2(175, 607)
+position = Vector2(170, 250)
+scale = Vector2(1.4, 1.4)
 script = ExtResource("1_dfkm2")
 
 [node name="GameHUD" parent="." unique_id=2032419917 instance=ExtResource("2_b7cn6")]
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1543107753]
 texture_filter = 1
+position = Vector2(0.7142868, 0)
 scale = Vector2(2, 2)
 tile_set = SubResource("TileSet_hg8vg")
 format = 2

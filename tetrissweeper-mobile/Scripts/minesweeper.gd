@@ -90,8 +90,8 @@ var rng = RandomNumberGenerator.new()
 var held_tetromino: Array = []
 var held_piece_atlas: Vector2i
 var can_hold: bool = true
-const HOLD_PREVIEW_POS: Vector2i = Vector2i(-5, -20)
-const NEXT_PREVIEW_POS: Vector2i = Vector2i(5, -20)
+const HOLD_PREVIEW_POS: Vector2i = Vector2i(-6, -8)
+const NEXT_PREVIEW_POS: Vector2i = Vector2i(3, -8)
 
 # Pause
 var is_paused: bool = false
@@ -100,11 +100,15 @@ var is_paused: bool = false
 var highscore: int = 0
 const SAVE_PATH: String = "user://highscore.cfg"
 
-# Flag mode for touch
-var flag_mode: bool = false
-
 # Touch soft drop
 var touch_down_held: bool = false
+const TOUCH_HOLD_THRESHOLD_MS: int = 350
+const TOUCH_MOVE_TOLERANCE: float = 18.0
+var active_board_touch_id: int = -1
+var active_board_touch_pos: Vector2 = Vector2.ZERO
+var active_board_touch_cell: Vector2i = Vector2i.ZERO
+var active_board_touch_start_ms: int = 0
+var board_touch_hold_triggered: bool = false
 
 @onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active
@@ -117,7 +121,6 @@ var touch_down_held: bool = false
 @onready var pause_menu: Control = $GameHUD/PauseMenu
 @onready var highscore_label: Label = $GameHUD/HighScoreLabel
 @onready var highscore_gameover_label: Label = $GameHUD/GameOverMenu/Card/HighScoreGameOver
-@onready var btn_flag: Button = $GameHUD/TouchControls/BtnFlag
 @onready var menu_highscore_label: Label = $GameHUD/MainMenu/Card/MenuHighScore
 
 # --- Minesweeper state ---
@@ -175,7 +178,6 @@ func _ready() -> void:
 	tc.get_node("BtnRotate").pressed.connect(_on_btn_rotate_pressed)
 	tc.get_node("BtnHardDrop").pressed.connect(_on_btn_hard_drop_pressed)
 	tc.get_node("BtnHold").pressed.connect(_on_btn_hold_pressed)
-	tc.get_node("BtnFlag").pressed.connect(_on_btn_flag_pressed)
 	tc.get_node("BtnPause").pressed.connect(_on_btn_pause_pressed)
 
 	load_highscore()
@@ -196,9 +198,8 @@ func start_game() -> void:
 	active_dir = Vector2i.ZERO
 	held_tetromino = []
 	can_hold = true
-	flag_mode = false
 	touch_down_held = false
-	btn_flag.text = "Reveal"
+	reset_board_touch_state()
 	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
@@ -222,6 +223,7 @@ func show_main_menu() -> void:
 	first_tetromino_landed = false
 	rotation_index = 0
 	touch_down_held = false
+	reset_board_touch_state()
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
@@ -238,6 +240,7 @@ func show_main_menu() -> void:
 func show_game_over_menu() -> void:
 	is_game_running = false
 	touch_down_held = false
+	reset_board_touch_state()
 	save_highscore()
 	final_score_label.text = "Score: " + str(score)
 	highscore_gameover_label.text = "Best: " + str(highscore)
@@ -268,6 +271,7 @@ func toggle_pause() -> void:
 func pause_game() -> void:
 	is_paused = true
 	touch_down_held = false
+	reset_board_touch_state()
 	pause_menu.visible = true
 
 
@@ -409,6 +413,11 @@ func _physics_process(delta: float) -> void:
 
 		if is_paused:
 			return
+
+		if active_board_touch_id != -1 and not board_touch_hold_triggered:
+			if Time.get_ticks_msec() - active_board_touch_start_ms >= TOUCH_HOLD_THRESHOLD_MS:
+				flag_cell(active_board_touch_cell)
+				board_touch_hold_triggered = true
 
 		if Input.is_action_just_pressed("ui_left"):
 			move_tetromino(Vector2i.LEFT)
@@ -629,11 +638,6 @@ func _on_btn_hold_pressed() -> void:
 	hold_tetromino()
 
 
-func _on_btn_flag_pressed() -> void:
-	flag_mode = !flag_mode
-	btn_flag.text = "Flag" if flag_mode else "Reveal"
-
-
 func _on_btn_pause_pressed() -> void:
 	if is_game_running:
 		toggle_pause()
@@ -808,15 +812,59 @@ func get_cell_from_mouse() -> Vector2i:
 	return mines.local_to_map(local_pos)
 
 
+func get_cell_from_global_position(global_pos: Vector2) -> Vector2i:
+	return mines.local_to_map(mines.to_local(global_pos))
+
+
+func is_point_in_mines(global_pos: Vector2) -> bool:
+	var local_pos: Vector2 = mines.to_local(global_pos)
+	return mines.get_used_rect().has_point(mines.local_to_map(local_pos))
+
+
+func reset_board_touch_state() -> void:
+	active_board_touch_id = -1
+	active_board_touch_pos = Vector2.ZERO
+	active_board_touch_cell = Vector2i.ZERO
+	active_board_touch_start_ms = 0
+	board_touch_hold_triggered = false
+
+
 func _input(event: InputEvent) -> void:
 	if not is_game_running or is_paused:
 		return
-	if event.is_action_pressed("reveal"):
-		var cell: Vector2i = get_cell_from_mouse()
-		if flag_mode:
-			flag_cell(cell)
-		else:
-			reveal_cell(cell)
-	elif event.is_action_pressed("flag"):
-		var cell: Vector2i = get_cell_from_mouse()
-		flag_cell(cell)
+	if event is InputEventScreenTouch:
+		_handle_screen_touch(event)
+	elif event is InputEventScreenDrag:
+		_handle_screen_drag(event)
+	elif event is InputEventMouseButton and event.pressed and is_point_in_mines(event.position):
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			reveal_cell(get_cell_from_global_position(event.position))
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			flag_cell(get_cell_from_global_position(event.position))
+
+
+func _handle_screen_touch(event: InputEventScreenTouch) -> void:
+	if event.pressed:
+		if active_board_touch_id != -1 or not is_point_in_mines(event.position):
+			return
+		active_board_touch_id = event.index
+		active_board_touch_pos = event.position
+		active_board_touch_cell = get_cell_from_global_position(event.position)
+		active_board_touch_start_ms = Time.get_ticks_msec()
+		board_touch_hold_triggered = false
+		return
+
+	if event.index != active_board_touch_id:
+		return
+
+	var moved_too_far: bool = active_board_touch_pos.distance_to(event.position) > TOUCH_MOVE_TOLERANCE
+	if not board_touch_hold_triggered and not moved_too_far and is_point_in_mines(event.position):
+		reveal_cell(active_board_touch_cell)
+	reset_board_touch_state()
+
+
+func _handle_screen_drag(event: InputEventScreenDrag) -> void:
+	if event.index != active_board_touch_id:
+		return
+	if active_board_touch_pos.distance_to(event.position) > TOUCH_MOVE_TOLERANCE:
+		reset_board_touch_state()
