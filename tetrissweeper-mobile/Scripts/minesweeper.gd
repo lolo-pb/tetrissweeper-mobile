@@ -732,6 +732,25 @@ func recalculate_all_adjacent_bombs() -> void:
 		minesweeper_cells[cell]["adjacent_bombs"] = count
 
 
+func recalculate_adjacent_bombs_for_rows(rows: Array[int]) -> void:
+	var rows_to_update: Dictionary = {}
+	for row in rows:
+		rows_to_update[row] = true
+
+	for cell in minesweeper_cells:
+		if not rows_to_update.has(cell.y):
+			continue
+		if minesweeper_cells[cell]["is_bomb"]:
+			continue
+		var count: int = 0
+		for neighbor in get_neighbors(cell):
+			if minesweeper_cells.has(neighbor) and minesweeper_cells[neighbor]["is_bomb"]:
+				count += 1
+		minesweeper_cells[cell]["adjacent_bombs"] = count
+		if minesweeper_cells[cell]["state"] == CellState.REVEALED:
+			render_minesweeper_cell(cell)
+
+
 func get_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return [
 		cell + Vector2i(-1, -1), cell + Vector2i(0, -1), cell + Vector2i(1, -1),
@@ -804,7 +823,11 @@ func shift_minesweeper_data(cleared_row: int) -> void:
 		else:
 			new_cells[cell] = minesweeper_cells[cell]
 	minesweeper_cells = new_cells
-	recalculate_all_adjacent_bombs()
+	recalculate_adjacent_bombs_for_rows([
+		cleared_row,
+		mini(cleared_row + 1, ROWS + 1),
+		ROWS + 1
+	])
 
 
 func get_cell_from_mouse() -> Vector2i:
