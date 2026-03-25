@@ -8,42 +8,42 @@ var i_tetromino: Array = [
 	[Vector2i(0, 2), Vector2i(1, 2), Vector2i(2, 2), Vector2i(3, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(1, 3)] # 270 degrees
 ]
- 
+
 var t_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var o_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)], # All rotations are the same
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1)] # All rotations are the same
 ]
- 
+
 var z_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(2, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(1, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 180 degrees
 	[Vector2i(1, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(0, 2)] # 270 degrees
 ]
- 
+
 var s_tetromino: Array = [
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 1), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2), Vector2i(1, 2)], # 180 degrees
 	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var l_tetromino: Array = [
 	[Vector2i(2, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2), Vector2i(2, 2)], # 90 degrees
 	[Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1), Vector2i(0, 2)], # 180 degrees
 	[Vector2i(0, 0), Vector2i(1, 0), Vector2i(1, 1), Vector2i(1, 2)] # 270 degrees
 ]
- 
+
 var j_tetromino: Array = [
 	[Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 1), Vector2i(2, 1)], # 0 degrees
 	[Vector2i(1, 0), Vector2i(2, 0), Vector2i(1, 1), Vector2i(1, 2)], # 90 degrees
@@ -65,6 +65,11 @@ var fall_timer: float = 0.0
 var fall_interval: float = 1.0
 const fast_fall_multiplier: float = 10.0
 
+# Holding controls
+var move_timer: float = 0.0
+var move_interval: float = 0.15 # Speed of movement while holding (seconds)
+var active_dir: Vector2i = Vector2i.ZERO
+
 var score: int
 const CLEAR_REWARD: int = 150
 var is_game_running: bool
@@ -81,9 +86,43 @@ var next_piece_atlas: Vector2i
 
 var rng = RandomNumberGenerator.new()
 
+# Hold queue
+var held_tetromino: Array = []
+var held_piece_atlas: Vector2i
+var can_hold: bool = true
+const HOLD_PREVIEW_POS: Vector2i = Vector2i(-6, -8)
+const NEXT_PREVIEW_POS: Vector2i = Vector2i(3, -8)
+
+# Pause
+var is_paused: bool = false
+
+# Highscore
+var highscore: int = 0
+const SAVE_PATH: String = "user://highscore.cfg"
+
+# Touch soft drop
+var touch_down_held: bool = false
+const TOUCH_HOLD_THRESHOLD_MS: int = 350
+const TOUCH_MOVE_TOLERANCE: float = 18.0
+var active_board_touch_id: int = -1
+var active_board_touch_pos: Vector2 = Vector2.ZERO
+var active_board_touch_cell: Vector2i = Vector2i.ZERO
+var active_board_touch_start_ms: int = 0
+var board_touch_hold_triggered: bool = false
+
 @onready var board: TileMapLayer = $Board
 @onready var active: TileMapLayer = $Active
 @onready var mines: TileMapLayer = $Mines
+@onready var hud: CanvasLayer = $GameHUD
+@onready var score_label: Label = $GameHUD/scoreLabel
+@onready var main_menu: Control = $GameHUD/MainMenu
+@onready var game_over_menu: Control = $GameHUD/GameOverMenu
+@onready var final_score_label: Label = $GameHUD/GameOverMenu/Card/FinalScoreLabel
+@onready var pause_menu: Control = $GameHUD/PauseMenu
+@onready var highscore_label: Label = $GameHUD/HighScoreLabel
+@onready var highscore_gameover_label: Label = $GameHUD/GameOverMenu/Card/HighScoreGameOver
+@onready var menu_highscore_label: Label = $GameHUD/MainMenu/Card/MenuHighScore
+@onready var touch_controls: Control = $GameHUD/TouchControls
 
 # --- Minesweeper state ---
 enum CellState {COVERED, REVEALED, FLAGGED}
@@ -115,24 +154,222 @@ var minesweeper_cells: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	start_game()
+	# Menu buttons
+	var start_button: Button = hud.get_node("MainMenu/Card/StartButton")
+	var retry_button: Button = hud.get_node("GameOverMenu/Card/RetryButton")
+	var main_menu_button: Button = hud.get_node("GameOverMenu/Card/MainMenuButton")
+	start_button.pressed.connect(_on_start_button_pressed)
+	retry_button.pressed.connect(_on_retry_button_pressed)
+	main_menu_button.pressed.connect(_on_main_menu_button_pressed)
+
+	# Pause menu buttons
+	var resume_button: Button = hud.get_node("PauseMenu/Card/ResumeButton")
+	var pause_mm_button: Button = hud.get_node("PauseMenu/Card/PauseMainMenuButton")
+	resume_button.pressed.connect(_on_resume_button_pressed)
+	pause_mm_button.pressed.connect(_on_pause_main_menu_pressed)
+
+	# Touch controls
+	var tc = hud.get_node("TouchControls")
+	tc.get_node("BtnLeft").button_down.connect(_on_btn_left_down)
+	tc.get_node("BtnLeft").button_up.connect(_on_btn_left_up)
+	tc.get_node("BtnRight").button_down.connect(_on_btn_right_down)
+	tc.get_node("BtnRight").button_up.connect(_on_btn_right_up)
+	tc.get_node("BtnDown").button_down.connect(_on_btn_down_down)
+	tc.get_node("BtnDown").button_up.connect(_on_btn_down_up)
+	tc.get_node("BtnRotate").pressed.connect(_on_btn_rotate_pressed)
+	tc.get_node("BtnHardDrop").pressed.connect(_on_btn_hard_drop_pressed)
+	tc.get_node("BtnHold").pressed.connect(_on_btn_hold_pressed)
+	tc.get_node("BtnPause").pressed.connect(_on_btn_pause_pressed)
+
+	load_highscore()
+	show_main_menu()
 
 
 func start_game() -> void:
 	rng.randomize()
 	score = 0
-	$GameHUD/gameOverLabel.visible = false
 	is_game_running = true
+	is_paused = false
 	first_tetromino_landed = false
+	tetrominoes = all_tetrominoes.duplicate()
+	rotation_index = 0
+	fall_timer = 0.0
+	fall_interval = 1.0
+	move_timer = 0.0
+	active_dir = Vector2i.ZERO
+	held_tetromino = []
+	can_hold = true
+	touch_down_held = false
+	reset_board_touch_state()
 	minesweeper_cells.clear()
 	clear_tetromino()
 	clear_board()
 	clear_next_tetromino_preview()
+	clear_hold_preview()
+	score_label.text = "Score: 0"
+	highscore_label.text = "Best: " + str(highscore)
+	main_menu.visible = false
+	game_over_menu.visible = false
+	pause_menu.visible = false
+	touch_controls.visible = true
 	current_tetromino = choose_tetromino()
 	piece_atlas = Vector2i(all_tetrominoes.find(current_tetromino), 0)
 	next_tetromino = choose_tetromino()
 	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
 	initialize_tetromino()
+
+
+func show_main_menu() -> void:
+	is_game_running = false
+	is_paused = false
+	first_tetromino_landed = false
+	rotation_index = 0
+	touch_down_held = false
+	reset_board_touch_state()
+	clear_tetromino()
+	clear_board()
+	clear_next_tetromino_preview()
+	clear_hold_preview()
+	score = 0
+	score_label.text = "Score: 0"
+	highscore_label.text = "Best: " + str(highscore)
+	main_menu.visible = true
+	game_over_menu.visible = false
+	pause_menu.visible = false
+	touch_controls.visible = false
+	menu_highscore_label.text = "Best: " + str(highscore)
+
+
+func show_game_over_menu() -> void:
+	is_game_running = false
+	touch_down_held = false
+	reset_board_touch_state()
+	save_highscore()
+	final_score_label.text = "Score: " + str(score)
+	highscore_gameover_label.text = "Best: " + str(highscore)
+	game_over_menu.visible = true
+	touch_controls.visible = true
+
+
+func _on_start_button_pressed() -> void:
+	start_game()
+
+
+func _on_retry_button_pressed() -> void:
+	start_game()
+
+
+func _on_main_menu_button_pressed() -> void:
+	show_main_menu()
+
+
+# --- Pause ---
+
+func toggle_pause() -> void:
+	if is_paused:
+		resume_game()
+	else:
+		pause_game()
+
+
+func pause_game() -> void:
+	is_paused = true
+	touch_down_held = false
+	reset_board_touch_state()
+	pause_menu.visible = true
+	touch_controls.visible = false
+
+
+func resume_game() -> void:
+	is_paused = false
+	pause_menu.visible = false
+	touch_controls.visible = true
+
+
+func _on_resume_button_pressed() -> void:
+	resume_game()
+
+
+func _on_pause_main_menu_pressed() -> void:
+	resume_game()
+	show_main_menu()
+
+
+# --- Highscore ---
+
+func load_highscore() -> void:
+	var config = ConfigFile.new()
+	if config.load(SAVE_PATH) == OK:
+		highscore = config.get_value("game", "highscore", 0)
+
+
+func save_highscore() -> void:
+	if score > highscore:
+		highscore = score
+	var config = ConfigFile.new()
+	config.set_value("game", "highscore", highscore)
+	config.save(SAVE_PATH)
+
+
+# --- Hold queue ---
+
+func hold_tetromino() -> void:
+	if not can_hold:
+		return
+	can_hold = false
+	clear_tetromino()
+	rotation_index = 0
+	if held_tetromino.is_empty():
+		held_tetromino = current_tetromino
+		held_piece_atlas = piece_atlas
+		current_tetromino = next_tetromino
+		piece_atlas = next_piece_atlas
+		next_tetromino = choose_tetromino()
+		next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
+		clear_next_tetromino_preview()
+	else:
+		var temp_tetromino = current_tetromino
+		var temp_atlas = piece_atlas
+		current_tetromino = held_tetromino
+		piece_atlas = held_piece_atlas
+		held_tetromino = temp_tetromino
+		held_piece_atlas = temp_atlas
+	initialize_tetromino()
+	render_hold_preview()
+
+
+func render_hold_preview() -> void:
+	clear_hold_preview()
+	if held_tetromino.is_empty():
+		return
+	render_tetromino(held_tetromino[0], HOLD_PREVIEW_POS, held_piece_atlas)
+
+
+func clear_hold_preview() -> void:
+	for y in range(4):
+		for x in range(4):
+			active.erase_cell(HOLD_PREVIEW_POS + Vector2i(x, y))
+
+
+# --- Hard drop ---
+
+func hard_drop() -> void:
+	clear_tetromino()
+	while is_valid_move(Vector2i.DOWN):
+		current_position += Vector2i.DOWN
+	render_tetromino(active_tetromino, current_position, piece_atlas)
+	land_tetromino()
+	spawn_next_piece()
+
+
+# --- Speed scaling by score ---
+
+func get_current_fall_interval() -> float:
+	var level: int = score / 500
+	return max(0.15, 1.0 - level * 0.1)
+
+
+# --- Tetromino logic ---
 
 func choose_tetromino() -> Array:
 	var selected_tetromino: Array
@@ -149,7 +386,7 @@ func initialize_tetromino() -> void:
 	current_position = START_POSITION
 	active_tetromino = current_tetromino[rotation_index]
 	render_tetromino(active_tetromino, current_position, piece_atlas)
-	render_tetromino(next_tetromino[0], Vector2i(5, -20), next_piece_atlas)
+	render_tetromino(next_tetromino[0], NEXT_PREVIEW_POS, next_piece_atlas)
 
 func render_tetromino(tetromino: Array, pos: Vector2i, atlas: Vector2i) -> void:
 	for block in tetromino:
@@ -159,52 +396,87 @@ func clear_tetromino() -> void:
 	for block in active_tetromino:
 		active.erase_cell(current_position + block)
 
+func spawn_next_piece() -> void:
+	current_tetromino = next_tetromino
+	piece_atlas = next_piece_atlas
+	next_tetromino = choose_tetromino()
+	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
+	clear_next_tetromino_preview()
+	rotation_index = 0
+	can_hold = true
+	fall_timer = 0.0
+	initialize_tetromino()
+	is_game_over()
+	active_dir = Vector2i.ZERO
+	move_timer = 0.0
+
 
 func _physics_process(delta: float) -> void:
 	if is_game_running:
-		var move_direction = Vector2i.ZERO
+		if Input.is_action_just_pressed("pause"):
+			toggle_pause()
+			return
+
+		if is_paused:
+			return
+
+		if active_board_touch_id != -1 and not board_touch_hold_triggered:
+			if Time.get_ticks_msec() - active_board_touch_start_ms >= TOUCH_HOLD_THRESHOLD_MS:
+				flag_cell(active_board_touch_cell)
+				board_touch_hold_triggered = true
 
 		if Input.is_action_just_pressed("ui_left"):
-			move_direction = Vector2i.LEFT
-		elif Input.is_action_just_pressed("ui_down"):
-			move_direction = Vector2i.DOWN
+			move_tetromino(Vector2i.LEFT)
+			active_dir = Vector2i.LEFT
+			move_timer = 0.0
 		elif Input.is_action_just_pressed("ui_right"):
-			move_direction = Vector2i.RIGHT
+			move_tetromino(Vector2i.RIGHT)
+			active_dir = Vector2i.RIGHT
+			move_timer = 0.0
 
-		
-		if move_direction != Vector2i.ZERO:
-			move_tetromino(move_direction)
+		if Input.is_action_just_released("ui_left") and active_dir == Vector2i.LEFT:
+			active_dir = Vector2i.ZERO
+		if Input.is_action_just_released("ui_right") and active_dir == Vector2i.RIGHT:
+			active_dir = Vector2i.ZERO
+
+		if active_dir != Vector2i.ZERO:
+			move_timer += delta
+			if move_timer >= move_interval:
+				move_tetromino(active_dir)
+				move_timer = 0.0
 
 		if Input.is_action_just_pressed("ui_up"):
 			rotate_tetromino()
 
-		var current_fall_interval = fall_interval
-		if Input.is_action_pressed("ui_down"):
+		if Input.is_action_just_pressed("hard_drop"):
+			hard_drop()
+			return
+
+		if Input.is_action_just_pressed("hold_piece"):
+			hold_tetromino()
+			return
+
+		var current_fall_interval = get_current_fall_interval()
+		if Input.is_action_pressed("ui_down") or touch_down_held:
 			current_fall_interval /= fast_fall_multiplier
 
 		fall_timer += delta
 		if fall_timer >= current_fall_interval:
 			move_tetromino(Vector2i.DOWN)
 			fall_timer = 0
-		
+
 		check_rows()
 
 
 func move_tetromino(dir: Vector2i) -> void:
 	if is_valid_move(dir):
-		clear_tetromino() # H
+		clear_tetromino()
 		current_position += dir
 		render_tetromino(active_tetromino, current_position, piece_atlas)
 	else:
 		if dir == Vector2i.DOWN:
 			land_tetromino()
-			current_tetromino = next_tetromino
-			piece_atlas = next_piece_atlas
-			next_tetromino = choose_tetromino()
-			next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
-			clear_next_tetromino_preview()
-			initialize_tetromino()
-			is_game_over()
+			spawn_next_piece()
 
 func land_tetromino() -> void:
 	for block in active_tetromino:
@@ -216,10 +488,10 @@ func land_tetromino() -> void:
 		reveal_all_bottom_edge_hints()
 
 
-func clear_next_tetromino_preview() -> void: # cuidado con esto, el borrado es absoluto, no relativo
+func clear_next_tetromino_preview() -> void:
 	for y in range(4):
 		for x in range(4):
-			active.erase_cell(Vector2i(5, -20) + Vector2i(x, y))
+			active.erase_cell(NEXT_PREVIEW_POS + Vector2i(x, y))
 
 func check_rows() -> void:
 	var row: int = ROWS
@@ -231,7 +503,7 @@ func check_rows() -> void:
 		if cells_filled == COLS and is_minesweeper_row_cleared(row):
 			shift_rows(row)
 			score += CLEAR_REWARD
-			$GameHUD/scoreLabel.text = "Score: " + str(score)
+			score_label.text = "Score: " + str(score)
 		else:
 			row -= 1
 
@@ -278,6 +550,8 @@ func shift_rows(start_row: int) -> void:
 		mines.erase_cell(Vector2i(x + 1, 1))
 	# Rebuild minesweeper_cells dictionary after shift
 	shift_minesweeper_data(start_row)
+	for x in range(1, COLS + 1): # re calcla los numeros de abajo
+		render_minesweeper_cell(Vector2i(x, ROWS + 1))
 
 func is_valid_move(dir: Vector2i) -> bool:
 	for block in active_tetromino:
@@ -289,15 +563,15 @@ func is_within_bounds(pos: Vector2i) -> bool:
 	if pos.x < 1 or pos.x > COLS or pos.y < 1 or pos.y > ROWS:
 		return false
 
-	var tile_id = board.get_cell_source_id(pos)
-	return tile_id == -1
+	var title_id_ = board.get_cell_source_id(pos)
+	return title_id_ == -1
 
 func is_game_over() -> void:
 	for x in active_tetromino:
 		if not is_within_bounds(current_position + x):
 			land_tetromino()
-			$GameHUD/gameOverLabel.visible = true
-			is_game_running = false
+			show_game_over_menu()
+			return
 
 func rotate_tetromino() -> void:
 	if is_valid_rotation():
@@ -314,6 +588,65 @@ func is_valid_rotation() -> bool:
 		if not is_within_bounds(current_position + block):
 			return false
 	return true
+
+
+# --- Touch control handlers ---
+
+func _on_btn_left_down() -> void:
+	if not is_game_running or is_paused:
+		return
+	move_tetromino(Vector2i.LEFT)
+	active_dir = Vector2i.LEFT
+	move_timer = 0.0
+
+
+func _on_btn_left_up() -> void:
+	if active_dir == Vector2i.LEFT:
+		active_dir = Vector2i.ZERO
+
+
+func _on_btn_right_down() -> void:
+	if not is_game_running or is_paused:
+		return
+	move_tetromino(Vector2i.RIGHT)
+	active_dir = Vector2i.RIGHT
+	move_timer = 0.0
+
+
+func _on_btn_right_up() -> void:
+	if active_dir == Vector2i.RIGHT:
+		active_dir = Vector2i.ZERO
+
+
+func _on_btn_down_down() -> void:
+	touch_down_held = true
+
+
+func _on_btn_down_up() -> void:
+	touch_down_held = false
+
+
+func _on_btn_rotate_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	rotate_tetromino()
+
+
+func _on_btn_hard_drop_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	hard_drop()
+
+
+func _on_btn_hold_pressed() -> void:
+	if not is_game_running or is_paused:
+		return
+	hold_tetromino()
+
+
+func _on_btn_pause_pressed() -> void:
+	if is_game_running:
+		toggle_pause()
 
 
 # --- Minesweeper functions ---
@@ -405,6 +738,25 @@ func recalculate_all_adjacent_bombs() -> void:
 		minesweeper_cells[cell]["adjacent_bombs"] = count
 
 
+func recalculate_adjacent_bombs_for_rows(rows: Array[int]) -> void:
+	var rows_to_update: Dictionary = {}
+	for row in rows:
+		rows_to_update[row] = true
+
+	for cell in minesweeper_cells:
+		if not rows_to_update.has(cell.y):
+			continue
+		if minesweeper_cells[cell]["is_bomb"]:
+			continue
+		var count: int = 0
+		for neighbor in get_neighbors(cell):
+			if minesweeper_cells.has(neighbor) and minesweeper_cells[neighbor]["is_bomb"]:
+				count += 1
+		minesweeper_cells[cell]["adjacent_bombs"] = count
+		if minesweeper_cells[cell]["state"] == CellState.REVEALED:
+			render_minesweeper_cell(cell)
+
+
 func get_neighbors(cell: Vector2i) -> Array[Vector2i]:
 	return [
 		cell + Vector2i(-1, -1), cell + Vector2i(0, -1), cell + Vector2i(1, -1),
@@ -423,9 +775,7 @@ func reveal_cell(cell: Vector2i) -> void:
 
 	if minesweeper_cells[cell]["is_bomb"]:
 		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
-		# TODO: handle bomb reveal consequence (game over, score penalty, etc.)
-		$GameHUD/gameOverLabel.visible = true
-		is_game_running = false
+		show_game_over_menu()
 
 	else:
 		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]
@@ -479,7 +829,11 @@ func shift_minesweeper_data(cleared_row: int) -> void:
 		else:
 			new_cells[cell] = minesweeper_cells[cell]
 	minesweeper_cells = new_cells
-	recalculate_all_adjacent_bombs()
+	recalculate_adjacent_bombs_for_rows([
+		cleared_row,
+		mini(cleared_row + 1, ROWS + 1),
+		ROWS + 1
+	])
 
 
 func get_cell_from_mouse() -> Vector2i:
@@ -487,12 +841,59 @@ func get_cell_from_mouse() -> Vector2i:
 	return mines.local_to_map(local_pos)
 
 
+func get_cell_from_global_position(global_pos: Vector2) -> Vector2i:
+	return mines.local_to_map(mines.to_local(global_pos))
+
+
+func is_point_in_mines(global_pos: Vector2) -> bool:
+	var local_pos: Vector2 = mines.to_local(global_pos)
+	return mines.get_used_rect().has_point(mines.local_to_map(local_pos))
+
+
+func reset_board_touch_state() -> void:
+	active_board_touch_id = -1
+	active_board_touch_pos = Vector2.ZERO
+	active_board_touch_cell = Vector2i.ZERO
+	active_board_touch_start_ms = 0
+	board_touch_hold_triggered = false
+
+
 func _input(event: InputEvent) -> void:
-	if not is_game_running:
+	if not is_game_running or is_paused:
 		return
-	if event.is_action_pressed("reveal"):
-		var cell: Vector2i = get_cell_from_mouse()
-		reveal_cell(cell)
-	elif event.is_action_pressed("flag"):
-		var cell: Vector2i = get_cell_from_mouse()
-		flag_cell(cell)
+	if event is InputEventScreenTouch:
+		_handle_screen_touch(event)
+	elif event is InputEventScreenDrag:
+		_handle_screen_drag(event)
+	elif event is InputEventMouseButton and event.pressed and is_point_in_mines(event.position):
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			reveal_cell(get_cell_from_global_position(event.position))
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			flag_cell(get_cell_from_global_position(event.position))
+
+
+func _handle_screen_touch(event: InputEventScreenTouch) -> void:
+	if event.pressed:
+		if active_board_touch_id != -1 or not is_point_in_mines(event.position):
+			return
+		active_board_touch_id = event.index
+		active_board_touch_pos = event.position
+		active_board_touch_cell = get_cell_from_global_position(event.position)
+		active_board_touch_start_ms = Time.get_ticks_msec()
+		board_touch_hold_triggered = false
+		return
+
+	if event.index != active_board_touch_id:
+		return
+
+	var moved_too_far: bool = active_board_touch_pos.distance_to(event.position) > TOUCH_MOVE_TOLERANCE
+	if not board_touch_hold_triggered and not moved_too_far and is_point_in_mines(event.position):
+		reveal_cell(active_board_touch_cell)
+	reset_board_touch_state()
+
+
+func _handle_screen_drag(event: InputEventScreenDrag) -> void:
+	if event.index != active_board_touch_id:
+		return
+	if active_board_touch_pos.distance_to(event.position) > TOUCH_MOVE_TOLERANCE:
+		reset_board_touch_state()

@@ -2,32 +2,342 @@
 
 [node name="GameHUD" type="CanvasLayer" unique_id=2032419917]
 
+[node name="TitleLabel" type="Label" parent="." unique_id=1001]
+visible = false
+offset_left = 122.0
+offset_top = 70.0
+offset_right = 418.0
+offset_bottom = 122.0
+theme_override_font_sizes/font_size = 36
+text = "Tetrissweeper"
+horizontal_alignment = 1
+
+[node name="HoldPanel" type="Panel" parent="."]
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 138.0
+offset_bottom = 164.0
+size_flags_horizontal = 4
+
+[node name="holdLabel" type="Label" parent="."]
+offset_left = 28.0
+offset_top = 24.0
+offset_right = 128.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 16
+text = "Hold"
+horizontal_alignment = 1
+
 [node name="Panel" type="Panel" parent="." unique_id=1340875181]
-offset_left = 175.0
-offset_top = 250.0
-offset_right = 375.0
-offset_bottom = 400.0
+offset_left = 208.0
+offset_top = 34.0
+offset_right = 338.0
+offset_bottom = 164.0
 size_flags_horizontal = 4
 
 [node name="next" type="Label" parent="." unique_id=1715811688]
-offset_left = 177.0
-offset_top = 216.0
-offset_right = 353.0
-offset_bottom = 248.0
+offset_left = 228.0
+offset_top = 24.0
+offset_right = 328.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 16
 text = "Next"
+horizontal_alignment = 1
 
 [node name="scoreLabel" type="Label" parent="." unique_id=2045640555]
-offset_left = 252.0
-offset_top = 407.0
-offset_right = 313.0
-offset_bottom = 430.0
+offset_left = 132.0
+offset_top = 174.0
+offset_right = 262.0
+offset_bottom = 202.0
+theme_override_font_sizes/font_size = 18
 text = "Score: 0"
+horizontal_alignment = 1
 
-[node name="gameOverLabel" type="Label" parent="." unique_id=121004144]
-offset_left = 196.0
-offset_top = 553.0
-offset_right = 379.0
-offset_bottom = 598.0
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 32
-text = "Game Over!"
+[node name="HighScoreLabel" type="Label" parent="."]
+offset_left = 278.0
+offset_top = 174.0
+offset_right = 408.0
+offset_bottom = 202.0
+theme_override_font_sizes/font_size = 16
+text = "Best: 0"
+horizontal_alignment = 1
+
+[node name="MainMenu" type="Control" parent="." unique_id=1002]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="MainMenu" unique_id=1003]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0392157, 0.054902, 0.101961, 0.8)
+
+[node name="Card" type="Panel" parent="MainMenu" unique_id=1004]
+custom_minimum_size = Vector2(340, 150)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -170.0
+offset_top = -110.0
+offset_right = 170.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MenuTitle" type="Label" parent="MainMenu/Card" unique_id=1005]
+visible = false
+offset_left = 30.0
+offset_top = 28.0
+offset_right = 310.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 28
+text = "Main Menu"
+horizontal_alignment = 1
+
+[node name="MenuSubtitle" type="Label" parent="MainMenu/Card" unique_id=1006]
+visible = false
+offset_left = 34.0
+offset_top = 76.0
+offset_right = 306.0
+offset_bottom = 144.0
+text = "Drop tetrominoes, reveal safe cells,
+and clear rows once every covered tile is solved."
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MenuHighScore" type="Label" parent="MainMenu/Card"]
+offset_left = 34.0
+offset_top = 24.0
+offset_right = 306.0
+offset_bottom = 48.0
+theme_override_font_sizes/font_size = 16
+text = "Best: 0"
+horizontal_alignment = 1
+
+[node name="StartButton" type="Button" parent="MainMenu/Card" unique_id=1007]
+offset_left = 70.0
+offset_top = 62.0
+offset_right = 270.0
+offset_bottom = 110.0
+theme_override_font_sizes/font_size = 22
+text = "Play"
+
+[node name="ControlsLabel" type="Label" parent="MainMenu/Card" unique_id=1008]
+visible = false
+offset_left = 14.0
+offset_top = 240.0
+offset_right = 326.0
+offset_bottom = 290.0
+theme_override_font_sizes/font_size = 11
+text = "Move: touch/arrows  Rotate: up  Drop: space
+Hold: C  Pause: esc  Tap board: reveal/flag"
+horizontal_alignment = 1
+
+[node name="GameOverMenu" type="Control" parent="." unique_id=1009]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="GameOverMenu" unique_id=1010]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.101961, 0.0392157, 0.0392157, 0.82)
+
+[node name="Card" type="Panel" parent="GameOverMenu" unique_id=1011]
+custom_minimum_size = Vector2(320, 280)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -160.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="gameOverLabel" type="Label" parent="GameOverMenu/Card" unique_id=121004144]
+offset_left = 36.0
+offset_top = 28.0
+offset_right = 284.0
+offset_bottom = 72.0
+theme_override_font_sizes/font_size = 30
+text = "Game Over"
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="GameOverMenu/Card" unique_id=1012]
+offset_left = 52.0
+offset_top = 82.0
+offset_right = 268.0
+offset_bottom = 114.0
+theme_override_font_sizes/font_size = 22
+text = "Score: 0"
+horizontal_alignment = 1
+
+[node name="HighScoreGameOver" type="Label" parent="GameOverMenu/Card"]
+offset_left = 52.0
+offset_top = 118.0
+offset_right = 268.0
+offset_bottom = 144.0
+theme_override_font_sizes/font_size = 18
+text = "Best: 0"
+horizontal_alignment = 1
+
+[node name="RetryButton" type="Button" parent="GameOverMenu/Card" unique_id=1013]
+offset_left = 60.0
+offset_top = 158.0
+offset_right = 260.0
+offset_bottom = 206.0
+theme_override_font_sizes/font_size = 22
+text = "Retry"
+
+[node name="MainMenuButton" type="Button" parent="GameOverMenu/Card" unique_id=1014]
+offset_left = 60.0
+offset_top = 216.0
+offset_right = 260.0
+offset_bottom = 264.0
+theme_override_font_sizes/font_size = 20
+text = "Menu"
+
+[node name="PauseMenu" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Overlay" type="ColorRect" parent="PauseMenu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.05, 0.05, 0.15, 0.8)
+
+[node name="Card" type="Panel" parent="PauseMenu"]
+custom_minimum_size = Vector2(300, 200)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PauseTitle" type="Label" parent="PauseMenu/Card"]
+offset_left = 30.0
+offset_top = 20.0
+offset_right = 270.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 28
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="ResumeButton" type="Button" parent="PauseMenu/Card"]
+offset_left = 60.0
+offset_top = 75.0
+offset_right = 240.0
+offset_bottom = 120.0
+theme_override_font_sizes/font_size = 20
+text = "Resume"
+
+[node name="PauseMainMenuButton" type="Button" parent="PauseMenu/Card"]
+offset_left = 60.0
+offset_top = 135.0
+offset_right = 240.0
+offset_bottom = 180.0
+theme_override_font_sizes/font_size = 20
+text = "Menu"
+
+[node name="TouchControls" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="BtnLeft" type="Button" parent="TouchControls"]
+offset_left = 20.0
+offset_top = 770.0
+offset_right = 100.0
+offset_bottom = 845.0
+theme_override_font_sizes/font_size = 28
+text = "<"
+
+[node name="BtnRight" type="Button" parent="TouchControls"]
+offset_left = 110.0
+offset_top = 770.0
+offset_right = 190.0
+offset_bottom = 845.0
+theme_override_font_sizes/font_size = 28
+text = ">"
+
+[node name="BtnDown" type="Button" parent="TouchControls"]
+offset_left = 65.0
+offset_top = 860.0
+offset_right = 145.0
+offset_bottom = 935.0
+theme_override_font_sizes/font_size = 28
+text = "v"
+
+[node name="BtnHold" type="Button" parent="TouchControls"]
+offset_left = 455.0
+offset_top = 840.0
+offset_right = 535.0
+offset_bottom = 915.0
+theme_override_font_sizes/font_size = 16
+text = "Hold"
+
+[node name="BtnRotate" type="Button" parent="TouchControls"]
+offset_left = 65.0
+offset_top = 680.0
+offset_right = 145.0
+offset_bottom = 755.0
+theme_override_font_sizes/font_size = 16
+text = "Rotate"
+
+[node name="BtnHardDrop" type="Button" parent="TouchControls"]
+offset_left = 455.0
+offset_top = 750.0
+offset_right = 535.0
+offset_bottom = 825.0
+theme_override_font_sizes/font_size = 16
+text = "Drop"
+
+[node name="BtnPause" type="Button" parent="TouchControls"]
+offset_left = 455.0
+offset_top = 20.0
+offset_right = 535.0
+offset_bottom = 95.0
+theme_override_font_sizes/font_size = 16
+text = "Pause"
