@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -r tetris-Sheet-outline C:UsersfrantOneDriveEscritorioRepositoriostetrissweeper-mobiletetrissweeper-mobile --include=*.gd --include=*.tres --include=*.tscn --include=*.cfg)",
+      "Bash(find C:UsersfrantOneDriveEscritorioRepositoriostetrissweeper-mobiletetrissweeper-mobile -type f \\\\\\(-name *.tres -o -name *.tscn \\\\\\))",
+      "Bash(ls -lh C:UsersfrantOneDriveEscritorioRepositoriostetrissweeper-mobiletetrissweeper-mobile/res/*.pngniga)"
+    ]
+  }
+}
