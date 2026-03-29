@@ -130,11 +130,11 @@ enum CellState {COVERED, REVEALED, FLAGGED}
 # Minesweeper tile atlas coordinates for the Mines TileMapLayer
 # finalfinal.png layout: 7 cols (tetromino type 0-6) × 12 rows
 # col = tetromino type index (I=0, T=1, O=2, Z=3, S=4, L=5, J=6)
-# row 0: covered, row 1: empty(0), row 2: bomb, row 3: flag, rows 6-13: numbers 1-8
+# row 0: covered, row 1: empty(0), row 2: bomb, row 4: flag, rows 6-13: numbers 1-8
 const MS_ROW_COVERED: int = 0
 const MS_ROW_BLANK: int = 1
 const MS_ROW_BOMB: int = 2
-const MS_ROW_FLAG: int = 3
+const MS_ROW_FLAG: int = 4
 # Number n (1-8) is at row: 5 + n
 
 const BOMBS_PER_PIECE: int = 1

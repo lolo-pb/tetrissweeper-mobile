@@ -4,7 +4,6 @@
 [ext_resource type="PackedScene" uid="uid://tnkaoxobdw10" path="res://Scenes/game_hud.tscn" id="2_b7cn6"]
 [ext_resource type="Texture2D" uid="uid://boy4rhqd7axx7" path="res://res/tetris-Sheet-outline.png" id="4_7xpvn"]
 [ext_resource type="Texture2D" uid="uid://c5ivftdmopqlv" path="res://res/space_tetromino_spritesheet_16pix.png" id="5_b7cn6"]
-
 [ext_resource type="Texture2D" uid="uid://w1a1h8iuskob" path="res://res/finalfinal.png" id="6_msf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xvpj2"]
