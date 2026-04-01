@@ -128,28 +128,18 @@ var board_touch_hold_triggered: bool = false
 enum CellState {COVERED, REVEALED, FLAGGED}
 
 # Minesweeper tile atlas coordinates for the Mines TileMapLayer
-const MS_COVERED_ATLAS: Vector2i = Vector2i(0, 0)
-const MS_FLAG_ATLAS: Vector2i = Vector2i(1, 0)
-const MS_BOMB_ATLAS: Vector2i = Vector2i(2, 0)
-const MS_BLANK_ATLAS: Vector2i = Vector2i(3, 0)
-const MS_BOMB_RED_ATLAS: Vector2i = Vector2i(0, 3)
-const MS_BOMB_CROSSED_ATLAS: Vector2i = Vector2i(1, 3)
-# Adjacent bomb numbers 1-8:
-const MS_NUMBER_ATLAS: Array[Vector2i] = [
-	Vector2i(0, 0), # unused index 0
-	Vector2i(0, 1), # 1
-	Vector2i(1, 1), # 2
-	Vector2i(2, 1), # 3
-	Vector2i(3, 1), # 4
-	Vector2i(0, 2), # 5
-	Vector2i(1, 2), # 6
-	Vector2i(2, 2), # 7
-	Vector2i(3, 2), # 8
-]
+# finalfinal.png layout: 7 cols (tetromino type 0-6) × 12 rows
+# col = tetromino type index (I=0, T=1, O=2, Z=3, S=4, L=5, J=6)
+# row 0: covered, row 1: empty(0), row 2: bomb, row 4: flag, rows 6-13: numbers 1-8
+const MS_ROW_COVERED: int = 0
+const MS_ROW_BLANK: int = 1
+const MS_ROW_BOMB: int = 2
+const MS_ROW_FLAG: int = 4
+# Number n (1-8) is at row: 5 + n
 
 const BOMBS_PER_PIECE: int = 1
 
-# Key: Vector2i cell position, Value: { "is_bomb": bool, "state": CellState, "adjacent_bombs": int }
+# Key: Vector2i cell position, Value: { "is_bomb": bool, "state": CellState, "adjacent_bombs": int, "tetromino_type": int }
 var minesweeper_cells: Dictionary = {}
 
 # Called when the node enters the scene tree for the first time.
@@ -656,11 +646,11 @@ func transform_to_minesweeper(tetromino_blocks: Array, pos: Vector2i) -> void:
 	for block in tetromino_blocks:
 		absolute_cells.append(pos + block)
 
-	place_bombs(absolute_cells)
+	place_bombs(absolute_cells, piece_atlas.x)
 	update_adjacent_bombs(absolute_cells)
 
 	for cell in absolute_cells:
-		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+		mines.set_cell(cell, tile_id, Vector2i(piece_atlas.x, MS_ROW_COVERED))
 
 
 func reveal_all_bottom_edge_hints() -> void:
@@ -670,7 +660,8 @@ func reveal_all_bottom_edge_hints() -> void:
 			minesweeper_cells[hint_cell] = {
 				"is_bomb": false,
 				"state": CellState.COVERED,
-				"adjacent_bombs": 0
+				"adjacent_bombs": 0,
+				"tetromino_type": 0
 			}
 		# Count bombs among this hint cell's neighbors
 		var count: int = 0
@@ -681,11 +672,11 @@ func reveal_all_bottom_edge_hints() -> void:
 		# Directly reveal without flood-fill (avoids cascading into covered board cells)
 		minesweeper_cells[hint_cell]["state"] = CellState.REVEALED
 		if count > 0:
-			mines.set_cell(hint_cell, tile_id, MS_NUMBER_ATLAS[count])
+			mines.set_cell(hint_cell, tile_id, Vector2i(0, 5 + count))
 		else:
-			mines.set_cell(hint_cell, tile_id, MS_BLANK_ATLAS)
+			mines.set_cell(hint_cell, tile_id, Vector2i(0, MS_ROW_BLANK))
 
-func place_bombs(cells: Array[Vector2i]) -> void:
+func place_bombs(cells: Array[Vector2i], tetromino_type: int) -> void:
 	var bomb_count: int = mini(BOMBS_PER_PIECE, cells.size())
 	var indices: Array = range(cells.size())
 	# Fisher-Yates partial shuffle for bomb selection
@@ -700,7 +691,8 @@ func place_bombs(cells: Array[Vector2i]) -> void:
 		minesweeper_cells[cell] = {
 			"is_bomb": i < bomb_count,
 			"state": CellState.COVERED,
-			"adjacent_bombs": 0
+			"adjacent_bombs": 0,
+			"tetromino_type": tetromino_type
 		}
 
 
@@ -773,16 +765,17 @@ func reveal_cell(cell: Vector2i) -> void:
 
 	minesweeper_cells[cell]["state"] = CellState.REVEALED
 
+	var tcol: int = minesweeper_cells[cell]["tetromino_type"]
 	if minesweeper_cells[cell]["is_bomb"]:
-		mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
+		mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BOMB))
 		show_game_over_menu()
 
 	else:
 		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]
 		if adj > 0:
-			mines.set_cell(cell, tile_id, MS_NUMBER_ATLAS[adj])
+			mines.set_cell(cell, tile_id, Vector2i(tcol, 5 + adj))
 		else:
-			mines.set_cell(cell, tile_id, MS_BLANK_ATLAS)
+			mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BLANK))
 			# Flood-fill reveal neighboring cells with 0 adjacent bombs
 			for neighbor in get_neighbors(cell):
 				reveal_cell(neighbor)
@@ -792,12 +785,13 @@ func flag_cell(cell: Vector2i) -> void:
 	if not minesweeper_cells.has(cell):
 		return
 
+	var tcol: int = minesweeper_cells[cell]["tetromino_type"]
 	if minesweeper_cells[cell]["state"] == CellState.COVERED:
 		minesweeper_cells[cell]["state"] = CellState.FLAGGED
-		mines.set_cell(cell, tile_id, MS_FLAG_ATLAS)
+		mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_FLAG))
 	elif minesweeper_cells[cell]["state"] == CellState.FLAGGED:
 		minesweeper_cells[cell]["state"] = CellState.COVERED
-		mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+		mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_COVERED))
 
 
 func render_minesweeper_cell(cell: Vector2i) -> void:
@@ -805,18 +799,19 @@ func render_minesweeper_cell(cell: Vector2i) -> void:
 		mines.erase_cell(cell)
 		return
 	var data: Dictionary = minesweeper_cells[cell]
+	var tcol: int = data.get("tetromino_type", 0)
 	match data["state"]:
 		CellState.COVERED:
-			mines.set_cell(cell, tile_id, MS_COVERED_ATLAS)
+			mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_COVERED))
 		CellState.FLAGGED:
-			mines.set_cell(cell, tile_id, MS_FLAG_ATLAS)
+			mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_FLAG))
 		CellState.REVEALED:
 			if data["is_bomb"]:
-				mines.set_cell(cell, tile_id, MS_BOMB_RED_ATLAS)
+				mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BOMB))
 			elif data["adjacent_bombs"] > 0:
-				mines.set_cell(cell, tile_id, MS_NUMBER_ATLAS[data["adjacent_bombs"]])
+				mines.set_cell(cell, tile_id, Vector2i(tcol, 5 + data["adjacent_bombs"]))
 			else:
-				mines.set_cell(cell, tile_id, MS_BLANK_ATLAS)
+				mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BLANK))
 
 
 func shift_minesweeper_data(cleared_row: int) -> void:
