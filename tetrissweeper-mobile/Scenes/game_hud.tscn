@@ -1,5 +1,46 @@
 [gd_scene format=3 uid="uid://tnkaoxobdw10"]
 
+[ext_resource type="FontFile" uid="uid://q5k35jngqlli" path="res://Orbitron/Orbitron-VariableFont_wght.ttf" id="1_qmln0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_qecdm"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_pef4c"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_hsjaf"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_4wiq2"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_6tc0p"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_jgq5c"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_ae0to"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_a0eom"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_sq0d6"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_5e2ck"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_f6io5"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_qim7q"]
+font = ExtResource("1_qmln0")
+
+[sub_resource type="LabelSettings" id="LabelSettings_euykq"]
+font = ExtResource("1_qmln0")
+
 [node name="GameHUD" type="CanvasLayer" unique_id=2032419917]
 
 [node name="TitleLabel" type="Label" parent="." unique_id=1001]
@@ -10,22 +51,24 @@ offset_right = 418.0
 offset_bottom = 122.0
 theme_override_font_sizes/font_size = 36
 text = "Tetrissweeper"
+label_settings = SubResource("LabelSettings_qecdm")
 horizontal_alignment = 1
 
-[node name="HoldPanel" type="Panel" parent="."]
+[node name="HoldPanel" type="Panel" parent="." unique_id=2064518729]
 offset_left = 8.0
 offset_top = 34.0
 offset_right = 138.0
 offset_bottom = 164.0
 size_flags_horizontal = 4
 
-[node name="holdLabel" type="Label" parent="."]
+[node name="holdLabel" type="Label" parent="." unique_id=2081220518]
 offset_left = 28.0
 offset_top = 24.0
 offset_right = 128.0
 offset_bottom = 48.0
 theme_override_font_sizes/font_size = 16
 text = "Hold"
+label_settings = SubResource("LabelSettings_pef4c")
 horizontal_alignment = 1
 
 [node name="Panel" type="Panel" parent="." unique_id=1340875181]
@@ -42,6 +85,7 @@ offset_right = 328.0
 offset_bottom = 48.0
 theme_override_font_sizes/font_size = 16
 text = "Next"
+label_settings = SubResource("LabelSettings_hsjaf")
 horizontal_alignment = 1
 
 [node name="scoreLabel" type="Label" parent="." unique_id=2045640555]
@@ -51,15 +95,17 @@ offset_right = 262.0
 offset_bottom = 202.0
 theme_override_font_sizes/font_size = 18
 text = "Score: 0"
+label_settings = SubResource("LabelSettings_4wiq2")
 horizontal_alignment = 1
 
-[node name="HighScoreLabel" type="Label" parent="."]
+[node name="HighScoreLabel" type="Label" parent="." unique_id=1379104055]
 offset_left = 278.0
 offset_top = 174.0
 offset_right = 408.0
 offset_bottom = 202.0
 theme_override_font_sizes/font_size = 16
 text = "Best: 0"
+label_settings = SubResource("LabelSettings_6tc0p")
 horizontal_alignment = 1
 
 [node name="MainMenu" type="Control" parent="." unique_id=1002]
@@ -69,15 +115,6 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-
-[node name="Overlay" type="ColorRect" parent="MainMenu" unique_id=1003]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-color = Color(0.0392157, 0.054902, 0.101961, 0.8)
 
 [node name="Card" type="Panel" parent="MainMenu" unique_id=1004]
 custom_minimum_size = Vector2(340, 150)
@@ -96,35 +133,42 @@ grow_vertical = 2
 
 [node name="MenuTitle" type="Label" parent="MainMenu/Card" unique_id=1005]
 visible = false
+layout_mode = 0
 offset_left = 30.0
 offset_top = 28.0
 offset_right = 310.0
 offset_bottom = 72.0
 theme_override_font_sizes/font_size = 28
 text = "Main Menu"
+label_settings = SubResource("LabelSettings_jgq5c")
 horizontal_alignment = 1
 
 [node name="MenuSubtitle" type="Label" parent="MainMenu/Card" unique_id=1006]
 visible = false
+layout_mode = 0
 offset_left = 34.0
 offset_top = 76.0
 offset_right = 306.0
 offset_bottom = 144.0
 text = "Drop tetrominoes, reveal safe cells,
 and clear rows once every covered tile is solved."
+label_settings = SubResource("LabelSettings_ae0to")
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="MenuHighScore" type="Label" parent="MainMenu/Card"]
+[node name="MenuHighScore" type="Label" parent="MainMenu/Card" unique_id=1306122668]
+layout_mode = 0
 offset_left = 34.0
 offset_top = 24.0
 offset_right = 306.0
 offset_bottom = 48.0
 theme_override_font_sizes/font_size = 16
 text = "Best: 0"
+label_settings = SubResource("LabelSettings_a0eom")
 horizontal_alignment = 1
 
 [node name="StartButton" type="Button" parent="MainMenu/Card" unique_id=1007]
+layout_mode = 0
 offset_left = 70.0
 offset_top = 62.0
 offset_right = 270.0
@@ -134,6 +178,7 @@ text = "Play"
 
 [node name="ControlsLabel" type="Label" parent="MainMenu/Card" unique_id=1008]
 visible = false
+layout_mode = 0
 offset_left = 14.0
 offset_top = 240.0
 offset_right = 326.0
@@ -141,6 +186,7 @@ offset_bottom = 290.0
 theme_override_font_sizes/font_size = 11
 text = "Move: touch/arrows  Rotate: up  Drop: space
 Hold: C  Pause: esc  Tap board: reveal/flag"
+label_settings = SubResource("LabelSettings_sq0d6")
 horizontal_alignment = 1
 
 [node name="GameOverMenu" type="Control" parent="." unique_id=1009]
@@ -177,33 +223,40 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="gameOverLabel" type="Label" parent="GameOverMenu/Card" unique_id=121004144]
+layout_mode = 0
 offset_left = 36.0
 offset_top = 28.0
 offset_right = 284.0
 offset_bottom = 72.0
 theme_override_font_sizes/font_size = 30
 text = "Game Over"
+label_settings = SubResource("LabelSettings_5e2ck")
 horizontal_alignment = 1
 
 [node name="FinalScoreLabel" type="Label" parent="GameOverMenu/Card" unique_id=1012]
+layout_mode = 0
 offset_left = 52.0
 offset_top = 82.0
 offset_right = 268.0
 offset_bottom = 114.0
 theme_override_font_sizes/font_size = 22
 text = "Score: 0"
+label_settings = SubResource("LabelSettings_f6io5")
 horizontal_alignment = 1
 
-[node name="HighScoreGameOver" type="Label" parent="GameOverMenu/Card"]
+[node name="HighScoreGameOver" type="Label" parent="GameOverMenu/Card" unique_id=1429870634]
+layout_mode = 0
 offset_left = 52.0
 offset_top = 118.0
 offset_right = 268.0
 offset_bottom = 144.0
 theme_override_font_sizes/font_size = 18
 text = "Best: 0"
+label_settings = SubResource("LabelSettings_qim7q")
 horizontal_alignment = 1
 
 [node name="RetryButton" type="Button" parent="GameOverMenu/Card" unique_id=1013]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 158.0
 offset_right = 260.0
@@ -212,6 +265,7 @@ theme_override_font_sizes/font_size = 22
 text = "Retry"
 
 [node name="MainMenuButton" type="Button" parent="GameOverMenu/Card" unique_id=1014]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 216.0
 offset_right = 260.0
@@ -219,7 +273,7 @@ offset_bottom = 264.0
 theme_override_font_sizes/font_size = 20
 text = "Menu"
 
-[node name="PauseMenu" type="Control" parent="."]
+[node name="PauseMenu" type="Control" parent="." unique_id=554154203]
 visible = false
 layout_mode = 3
 anchors_preset = 15
@@ -228,7 +282,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Overlay" type="ColorRect" parent="PauseMenu"]
+[node name="Overlay" type="ColorRect" parent="PauseMenu" unique_id=528171334]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -237,7 +291,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.05, 0.05, 0.15, 0.8)
 
-[node name="Card" type="Panel" parent="PauseMenu"]
+[node name="Card" type="Panel" parent="PauseMenu" unique_id=1920215640]
 custom_minimum_size = Vector2(300, 200)
 layout_mode = 1
 anchors_preset = 8
@@ -252,16 +306,19 @@ offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PauseTitle" type="Label" parent="PauseMenu/Card"]
+[node name="PauseTitle" type="Label" parent="PauseMenu/Card" unique_id=1708257279]
+layout_mode = 0
 offset_left = 30.0
 offset_top = 20.0
 offset_right = 270.0
 offset_bottom = 60.0
 theme_override_font_sizes/font_size = 28
 text = "Paused"
+label_settings = SubResource("LabelSettings_euykq")
 horizontal_alignment = 1
 
-[node name="ResumeButton" type="Button" parent="PauseMenu/Card"]
+[node name="ResumeButton" type="Button" parent="PauseMenu/Card" unique_id=1199930087]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 75.0
 offset_right = 240.0
@@ -269,7 +326,8 @@ offset_bottom = 120.0
 theme_override_font_sizes/font_size = 20
 text = "Resume"
 
-[node name="PauseMainMenuButton" type="Button" parent="PauseMenu/Card"]
+[node name="PauseMainMenuButton" type="Button" parent="PauseMenu/Card" unique_id=821307589]
+layout_mode = 0
 offset_left = 60.0
 offset_top = 135.0
 offset_right = 240.0
@@ -277,7 +335,7 @@ offset_bottom = 180.0
 theme_override_font_sizes/font_size = 20
 text = "Menu"
 
-[node name="TouchControls" type="Control" parent="."]
+[node name="TouchControls" type="Control" parent="." unique_id=1865264548]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -286,7 +344,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="BtnLeft" type="Button" parent="TouchControls"]
+[node name="BtnLeft" type="Button" parent="TouchControls" unique_id=1378443453]
+layout_mode = 0
 offset_left = 20.0
 offset_top = 770.0
 offset_right = 100.0
@@ -294,7 +353,8 @@ offset_bottom = 845.0
 theme_override_font_sizes/font_size = 28
 text = "<"
 
-[node name="BtnRight" type="Button" parent="TouchControls"]
+[node name="BtnRight" type="Button" parent="TouchControls" unique_id=1485527843]
+layout_mode = 0
 offset_left = 110.0
 offset_top = 770.0
 offset_right = 190.0
@@ -302,7 +362,8 @@ offset_bottom = 845.0
 theme_override_font_sizes/font_size = 28
 text = ">"
 
-[node name="BtnDown" type="Button" parent="TouchControls"]
+[node name="BtnDown" type="Button" parent="TouchControls" unique_id=1181488911]
+layout_mode = 0
 offset_left = 65.0
 offset_top = 860.0
 offset_right = 145.0
@@ -310,7 +371,8 @@ offset_bottom = 935.0
 theme_override_font_sizes/font_size = 28
 text = "v"
 
-[node name="BtnHold" type="Button" parent="TouchControls"]
+[node name="BtnHold" type="Button" parent="TouchControls" unique_id=521446146]
+layout_mode = 0
 offset_left = 455.0
 offset_top = 840.0
 offset_right = 535.0
@@ -318,7 +380,8 @@ offset_bottom = 915.0
 theme_override_font_sizes/font_size = 16
 text = "Hold"
 
-[node name="BtnRotate" type="Button" parent="TouchControls"]
+[node name="BtnRotate" type="Button" parent="TouchControls" unique_id=1172181219]
+layout_mode = 0
 offset_left = 65.0
 offset_top = 680.0
 offset_right = 145.0
@@ -326,7 +389,8 @@ offset_bottom = 755.0
 theme_override_font_sizes/font_size = 16
 text = "Rotate"
 
-[node name="BtnHardDrop" type="Button" parent="TouchControls"]
+[node name="BtnHardDrop" type="Button" parent="TouchControls" unique_id=944576261]
+layout_mode = 0
 offset_left = 455.0
 offset_top = 750.0
 offset_right = 535.0
@@ -334,7 +398,8 @@ offset_bottom = 825.0
 theme_override_font_sizes/font_size = 16
 text = "Drop"
 
-[node name="BtnPause" type="Button" parent="TouchControls"]
+[node name="BtnPause" type="Button" parent="TouchControls" unique_id=1347086875]
+layout_mode = 0
 offset_left = 455.0
 offset_top = 20.0
 offset_right = 535.0

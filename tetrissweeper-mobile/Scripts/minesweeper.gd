@@ -62,7 +62,6 @@ var current_position: Vector2i
 
 const movement_direction: Array[Vector2i] = [Vector2i.LEFT, Vector2i.DOWN, Vector2i.RIGHT]
 var fall_timer: float = 0.0
-var fall_interval: float = 1.0
 const fast_fall_multiplier: float = 10.0
 
 # Holding controls
@@ -71,6 +70,7 @@ var move_interval: float = 0.15 # Speed of movement while holding (seconds)
 var active_dir: Vector2i = Vector2i.ZERO
 
 var score: int
+var lines_cleared: int = 0
 const CLEAR_REWARD: int = 150
 var is_game_running: bool
 var first_tetromino_landed: bool = false
@@ -128,14 +128,15 @@ var board_touch_hold_triggered: bool = false
 enum CellState {COVERED, REVEALED, FLAGGED}
 
 # Minesweeper tile atlas coordinates for the Mines TileMapLayer
-# finalfinal.png layout: 7 cols (tetromino type 0-6) × 12 rows
+# space_tiles_spritesheet.png layout: 8 cols (tetromino type 0-6, col 7 unused) × 12 rows
 # col = tetromino type index (I=0, T=1, O=2, Z=3, S=4, L=5, J=6)
-# row 0: covered, row 1: empty(0), row 2: bomb, row 4: flag, rows 6-13: numbers 1-8
-const MS_ROW_COVERED: int = 0
+# row 0: covered(dark bg/gray), row 1: blank(light bg), row 2: bomb, row 3: flag, rows 4-11: numbers 1-8
 const MS_ROW_BLANK: int = 1
+const MS_ROW_COVERED: int = 0
 const MS_ROW_BOMB: int = 2
-const MS_ROW_FLAG: int = 4
-# Number n (1-8) is at row: 5 + n
+const MS_ROW_FLAG: int = 3
+# Number n (1-8) is at row: 3 + n
+const MS_COL_GRAY: int = 7  # gray column, used exclusively for the covered state
 
 const BOMBS_PER_PIECE: int = 1
 
@@ -178,13 +179,13 @@ func _ready() -> void:
 func start_game() -> void:
 	rng.randomize()
 	score = 0
+	lines_cleared = 0
 	is_game_running = true
 	is_paused = false
 	first_tetromino_landed = false
 	tetrominoes = all_tetrominoes.duplicate()
 	rotation_index = 0
 	fall_timer = 0.0
-	fall_interval = 1.0
 	move_timer = 0.0
 	active_dir = Vector2i.ZERO
 	held_tetromino = []
@@ -352,11 +353,13 @@ func hard_drop() -> void:
 	spawn_next_piece()
 
 
-# --- Speed scaling by score ---
+# --- Speed scaling by cleared lines (linear) ---
+const FALL_INTERVAL_START: float = 1.0
+const FALL_INTERVAL_MIN: float = 0.1
+const FALL_SPEED_PER_LINE: float = 0.03  # each cleared line subtracts 0.03s (max speed at 30 lines)
 
 func get_current_fall_interval() -> float:
-	var level: int = score / 500
-	return max(0.15, 1.0 - level * 0.1)
+	return maxf(FALL_INTERVAL_MIN, FALL_INTERVAL_START - lines_cleared * FALL_SPEED_PER_LINE)
 
 
 # --- Tetromino logic ---
@@ -493,6 +496,7 @@ func check_rows() -> void:
 		if cells_filled == COLS and is_minesweeper_row_cleared(row):
 			shift_rows(row)
 			score += CLEAR_REWARD
+			lines_cleared += 1
 			score_label.text = "Score: " + str(score)
 		else:
 			row -= 1
@@ -661,7 +665,7 @@ func reveal_all_bottom_edge_hints() -> void:
 				"is_bomb": false,
 				"state": CellState.COVERED,
 				"adjacent_bombs": 0,
-				"tetromino_type": 0
+				"tetromino_type": MS_COL_GRAY
 			}
 		# Count bombs among this hint cell's neighbors
 		var count: int = 0
@@ -672,9 +676,9 @@ func reveal_all_bottom_edge_hints() -> void:
 		# Directly reveal without flood-fill (avoids cascading into covered board cells)
 		minesweeper_cells[hint_cell]["state"] = CellState.REVEALED
 		if count > 0:
-			mines.set_cell(hint_cell, tile_id, Vector2i(0, 5 + count))
+			mines.set_cell(hint_cell, tile_id, Vector2i(MS_COL_GRAY, 3 + count))
 		else:
-			mines.set_cell(hint_cell, tile_id, Vector2i(0, MS_ROW_BLANK))
+			mines.set_cell(hint_cell, tile_id, Vector2i(MS_COL_GRAY, MS_ROW_BLANK))
 
 func place_bombs(cells: Array[Vector2i], tetromino_type: int) -> void:
 	var bomb_count: int = mini(BOMBS_PER_PIECE, cells.size())
@@ -773,7 +777,7 @@ func reveal_cell(cell: Vector2i) -> void:
 	else:
 		var adj: int = minesweeper_cells[cell]["adjacent_bombs"]
 		if adj > 0:
-			mines.set_cell(cell, tile_id, Vector2i(tcol, 5 + adj))
+			mines.set_cell(cell, tile_id, Vector2i(tcol, 3 + adj))
 		else:
 			mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BLANK))
 			# Flood-fill reveal neighboring cells with 0 adjacent bombs
@@ -809,7 +813,7 @@ func render_minesweeper_cell(cell: Vector2i) -> void:
 			if data["is_bomb"]:
 				mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BOMB))
 			elif data["adjacent_bombs"] > 0:
-				mines.set_cell(cell, tile_id, Vector2i(tcol, 5 + data["adjacent_bombs"]))
+				mines.set_cell(cell, tile_id, Vector2i(tcol, 3 + data["adjacent_bombs"]))
 			else:
 				mines.set_cell(cell, tile_id, Vector2i(tcol, MS_ROW_BLANK))
 
