@@ -1,6 +1,14 @@
 [gd_scene format=3 uid="uid://tnkaoxobdw10"]
 
 [ext_resource type="FontFile" uid="uid://q5k35jngqlli" path="res://Orbitron/Orbitron-VariableFont_wght.ttf" id="1_qmln0"]
+[ext_resource type="Texture2D" uid="uid://kutm5vtta378" path="res://res/dpad_button_unpressed.png" id="2_dpad"]
+[ext_resource type="Texture2D" uid="uid://bl6wgvgujglwb" path="res://res/dpad_center.png" id="3_dpad"]
+[ext_resource type="Texture2D" uid="uid://djriltey3f5qq" path="res://res/hold_panel_4x.png" id="4_hpanel"]
+[ext_resource type="Texture2D" uid="uid://bmrj6qd8s6djs" path="res://res/next_panel_4x.png" id="5_npanel"]
+[ext_resource type="Texture2D" uid="uid://dymdssj64rrtb" path="res://res/btn_hold_4x.png" id="6_bhold"]
+[ext_resource type="Texture2D" uid="uid://b4pmiyn1m21y8" path="res://res/btn_drop_4x.png" id="7_bdrop"]
+[ext_resource type="Texture2D" uid="uid://dgaerjd3dxd6k" path="res://res/btn_pause_4x.png" id="8_bpause"]
+[ext_resource type="Texture2D" uid="uid://ddgnmf21eu6vl" path="res://res/btn_start_4x.png" id="9_bstart"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_qecdm"]
 font = ExtResource("1_qmln0")
@@ -55,13 +63,25 @@ label_settings = SubResource("LabelSettings_qecdm")
 horizontal_alignment = 1
 
 [node name="HoldPanel" type="Panel" parent="." unique_id=2064518729]
+visible = false
 offset_left = 8.0
 offset_top = 34.0
 offset_right = 138.0
 offset_bottom = 164.0
 size_flags_horizontal = 4
 
+[node name="PanelBg" type="TextureRect" parent="HoldPanel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("4_hpanel")
+expand_mode = 1
+
 [node name="holdLabel" type="Label" parent="." unique_id=2081220518]
+visible = false
 offset_left = 28.0
 offset_top = 24.0
 offset_right = 128.0
@@ -72,13 +92,25 @@ label_settings = SubResource("LabelSettings_pef4c")
 horizontal_alignment = 1
 
 [node name="Panel" type="Panel" parent="." unique_id=1340875181]
+visible = false
 offset_left = 208.0
 offset_top = 34.0
 offset_right = 338.0
 offset_bottom = 164.0
 size_flags_horizontal = 4
 
+[node name="PanelBg" type="TextureRect" parent="Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("5_npanel")
+expand_mode = 1
+
 [node name="next" type="Label" parent="." unique_id=1715811688]
+visible = false
 offset_left = 228.0
 offset_top = 24.0
 offset_right = 328.0
@@ -173,8 +205,17 @@ offset_left = 70.0
 offset_top = 62.0
 offset_right = 270.0
 offset_bottom = 110.0
-theme_override_font_sizes/font_size = 22
-text = "Play"
+flat = true
+
+[node name="BtnTexture" type="TextureRect" parent="MainMenu/Card/StartButton"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("9_bstart")
+expand_mode = 1
 
 [node name="ControlsLabel" type="Label" parent="MainMenu/Card" unique_id=1008]
 visible = false
@@ -344,32 +385,85 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
+[node name="BtnRotate" type="Button" parent="TouchControls" unique_id=1172181219]
+layout_mode = 0
+offset_left = 97.0
+offset_top = 680.0
+offset_right = 177.0
+offset_bottom = 760.0
+flat = true
+
+[node name="DpadTexture" type="TextureRect" parent="TouchControls/BtnRotate"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+mouse_filter = 2
+texture = ExtResource("2_dpad")
+expand_mode = 1
+
 [node name="BtnLeft" type="Button" parent="TouchControls" unique_id=1378443453]
 layout_mode = 0
-offset_left = 20.0
-offset_top = 770.0
-offset_right = 100.0
-offset_bottom = 845.0
-theme_override_font_sizes/font_size = 28
-text = "<"
+offset_left = 15.0
+offset_top = 762.0
+offset_right = 95.0
+offset_bottom = 842.0
+flat = true
+
+[node name="DpadTexture" type="TextureRect" parent="TouchControls/BtnLeft"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+pivot_offset = Vector2(40, 40)
+rotation = -1.5708
+mouse_filter = 2
+texture = ExtResource("2_dpad")
+expand_mode = 1
+
+[node name="DpadCenter" type="TextureRect" parent="TouchControls"]
+layout_mode = 0
+offset_left = 97.0
+offset_top = 762.0
+offset_right = 177.0
+offset_bottom = 842.0
+mouse_filter = 2
+texture = ExtResource("3_dpad")
+expand_mode = 1
 
 [node name="BtnRight" type="Button" parent="TouchControls" unique_id=1485527843]
 layout_mode = 0
-offset_left = 110.0
-offset_top = 770.0
-offset_right = 190.0
-offset_bottom = 845.0
-theme_override_font_sizes/font_size = 28
-text = ">"
+offset_left = 179.0
+offset_top = 762.0
+offset_right = 259.0
+offset_bottom = 842.0
+flat = true
+
+[node name="DpadTexture" type="TextureRect" parent="TouchControls/BtnRight"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+pivot_offset = Vector2(40, 40)
+rotation = 1.5708
+mouse_filter = 2
+texture = ExtResource("2_dpad")
+expand_mode = 1
 
 [node name="BtnDown" type="Button" parent="TouchControls" unique_id=1181488911]
 layout_mode = 0
-offset_left = 65.0
-offset_top = 860.0
-offset_right = 145.0
-offset_bottom = 935.0
-theme_override_font_sizes/font_size = 28
-text = "v"
+offset_left = 97.0
+offset_top = 844.0
+offset_right = 177.0
+offset_bottom = 924.0
+flat = true
+
+[node name="DpadTexture" type="TextureRect" parent="TouchControls/BtnDown"]
+layout_mode = 0
+offset_right = 80.0
+offset_bottom = 80.0
+pivot_offset = Vector2(40, 40)
+rotation = 3.14159
+mouse_filter = 2
+texture = ExtResource("2_dpad")
+expand_mode = 1
 
 [node name="BtnHold" type="Button" parent="TouchControls" unique_id=521446146]
 layout_mode = 0
@@ -377,17 +471,17 @@ offset_left = 455.0
 offset_top = 840.0
 offset_right = 535.0
 offset_bottom = 915.0
-theme_override_font_sizes/font_size = 16
-text = "Hold"
+flat = true
 
-[node name="BtnRotate" type="Button" parent="TouchControls" unique_id=1172181219]
-layout_mode = 0
-offset_left = 65.0
-offset_top = 680.0
-offset_right = 145.0
-offset_bottom = 755.0
-theme_override_font_sizes/font_size = 16
-text = "Rotate"
+[node name="BtnTexture" type="TextureRect" parent="TouchControls/BtnHold"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("6_bhold")
+expand_mode = 1
 
 [node name="BtnHardDrop" type="Button" parent="TouchControls" unique_id=944576261]
 layout_mode = 0
@@ -395,8 +489,17 @@ offset_left = 455.0
 offset_top = 750.0
 offset_right = 535.0
 offset_bottom = 825.0
-theme_override_font_sizes/font_size = 16
-text = "Drop"
+flat = true
+
+[node name="BtnTexture" type="TextureRect" parent="TouchControls/BtnHardDrop"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("7_bdrop")
+expand_mode = 1
 
 [node name="BtnPause" type="Button" parent="TouchControls" unique_id=1347086875]
 layout_mode = 0
@@ -404,5 +507,14 @@ offset_left = 455.0
 offset_top = 20.0
 offset_right = 535.0
 offset_bottom = 95.0
-theme_override_font_sizes/font_size = 16
-text = "Pause"
+flat = true
+
+[node name="BtnTexture" type="TextureRect" parent="TouchControls/BtnPause"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("8_bpause")
+expand_mode = 1

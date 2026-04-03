@@ -6,6 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://boy4rhqd7axx7" path="res://res/tetris-Sheet-outline.png" id="4_7xpvn"]
 [ext_resource type="Texture2D" uid="uid://cp8k7gcfxtvkk" path="res://res/space_tiles_spritesheet.png" id="5_7xpvn"]
 [ext_resource type="Texture2D" uid="uid://c5ivftdmopqlv" path="res://res/space_tetromino_spritesheet_16pix.png" id="5_b7cn6"]
+[ext_resource type="Texture2D" uid="uid://djriltey3f5qq" path="res://res/hold_panel_4x.png" id="6_hpanel"]
+[ext_resource type="Texture2D" uid="uid://bmrj6qd8s6djs" path="res://res/next_panel_4x.png" id="7_npanel"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xvpj2"]
 texture = ExtResource("5_b7cn6")
@@ -155,6 +157,28 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 texture = ExtResource("2_xvpj2")
+expand_mode = 1
+
+[node name="HoldPanelBg" type="TextureRect" parent="."]
+top_level = true
+z_index = -1
+offset_left = 8.0
+offset_top = 34.0
+offset_right = 138.0
+offset_bottom = 164.0
+mouse_filter = 2
+texture = ExtResource("6_hpanel")
+expand_mode = 1
+
+[node name="NextPanelBg" type="TextureRect" parent="."]
+top_level = true
+z_index = -1
+offset_left = 208.0
+offset_top = 34.0
+offset_right = 338.0
+offset_bottom = 164.0
+mouse_filter = 2
+texture = ExtResource("7_npanel")
 expand_mode = 1
 
 [node name="GameHUD" parent="." unique_id=2032419917 instance=ExtResource("2_b7cn6")]

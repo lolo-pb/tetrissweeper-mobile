@@ -100,6 +100,10 @@ var is_paused: bool = false
 var highscore: int = 0
 const SAVE_PATH: String = "user://highscore.cfg"
 
+# D-pad textures
+var dpad_tex_unpressed: Texture2D = preload("res://res/dpad_button_unpressed.png")
+var dpad_tex_pressed: Texture2D = preload("res://res/dpad_button_pressed.png")
+
 # Touch soft drop
 var touch_down_held: bool = false
 const TOUCH_HOLD_THRESHOLD_MS: int = 350
@@ -167,7 +171,8 @@ func _ready() -> void:
 	tc.get_node("BtnRight").button_up.connect(_on_btn_right_up)
 	tc.get_node("BtnDown").button_down.connect(_on_btn_down_down)
 	tc.get_node("BtnDown").button_up.connect(_on_btn_down_up)
-	tc.get_node("BtnRotate").pressed.connect(_on_btn_rotate_pressed)
+	tc.get_node("BtnRotate").button_down.connect(_on_btn_rotate_down)
+	tc.get_node("BtnRotate").button_up.connect(_on_btn_rotate_up)
 	tc.get_node("BtnHardDrop").pressed.connect(_on_btn_hard_drop_pressed)
 	tc.get_node("BtnHold").pressed.connect(_on_btn_hold_pressed)
 	tc.get_node("BtnPause").pressed.connect(_on_btn_pause_pressed)
@@ -586,7 +591,12 @@ func is_valid_rotation() -> bool:
 
 # --- Touch control handlers ---
 
+func set_dpad_texture(btn_name: String, pressed: bool) -> void:
+	var tex_rect: TextureRect = touch_controls.get_node(btn_name + "/DpadTexture")
+	tex_rect.texture = dpad_tex_pressed if pressed else dpad_tex_unpressed
+
 func _on_btn_left_down() -> void:
+	set_dpad_texture("BtnLeft", true)
 	if not is_game_running or is_paused:
 		return
 	move_tetromino(Vector2i.LEFT)
@@ -595,11 +605,13 @@ func _on_btn_left_down() -> void:
 
 
 func _on_btn_left_up() -> void:
+	set_dpad_texture("BtnLeft", false)
 	if active_dir == Vector2i.LEFT:
 		active_dir = Vector2i.ZERO
 
 
 func _on_btn_right_down() -> void:
+	set_dpad_texture("BtnRight", true)
 	if not is_game_running or is_paused:
 		return
 	move_tetromino(Vector2i.RIGHT)
@@ -608,22 +620,30 @@ func _on_btn_right_down() -> void:
 
 
 func _on_btn_right_up() -> void:
+	set_dpad_texture("BtnRight", false)
 	if active_dir == Vector2i.RIGHT:
 		active_dir = Vector2i.ZERO
 
 
 func _on_btn_down_down() -> void:
+	set_dpad_texture("BtnDown", true)
 	touch_down_held = true
 
 
 func _on_btn_down_up() -> void:
+	set_dpad_texture("BtnDown", false)
 	touch_down_held = false
 
 
-func _on_btn_rotate_pressed() -> void:
+func _on_btn_rotate_down() -> void:
+	set_dpad_texture("BtnRotate", true)
 	if not is_game_running or is_paused:
 		return
 	rotate_tetromino()
+
+
+func _on_btn_rotate_up() -> void:
+	set_dpad_texture("BtnRotate", false)
 
 
 func _on_btn_hard_drop_pressed() -> void:
