@@ -90,8 +90,8 @@ var rng = RandomNumberGenerator.new()
 var held_tetromino: Array = []
 var held_piece_atlas: Vector2i
 var can_hold: bool = true
-const HOLD_PREVIEW_POS: Vector2i = Vector2i(-6, -8)
-const NEXT_PREVIEW_POS: Vector2i = Vector2i(3, -8)
+const HOLD_PREVIEW_POS: Vector2i = Vector2i(-7, -4)
+const NEXT_PREVIEW_POS: Vector2i = Vector2i( 1, -4)
 
 # Pause
 var is_paused: bool = false

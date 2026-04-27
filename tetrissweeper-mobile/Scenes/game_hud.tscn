@@ -121,9 +121,9 @@ label_settings = SubResource("LabelSettings_hsjaf")
 horizontal_alignment = 1
 
 [node name="scoreLabel" type="Label" parent="." unique_id=2045640555]
-offset_left = 132.0
+offset_left = 8.0
 offset_top = 174.0
-offset_right = 262.0
+offset_right = 138.0
 offset_bottom = 202.0
 theme_override_font_sizes/font_size = 18
 text = "Score: 0"
@@ -131,10 +131,10 @@ label_settings = SubResource("LabelSettings_4wiq2")
 horizontal_alignment = 1
 
 [node name="HighScoreLabel" type="Label" parent="." unique_id=1379104055]
-offset_left = 278.0
-offset_top = 174.0
-offset_right = 408.0
-offset_bottom = 202.0
+offset_left = 8.0
+offset_top = 204.0
+offset_right = 138.0
+offset_bottom = 232.0
 theme_override_font_sizes/font_size = 16
 text = "Best: 0"
 label_settings = SubResource("LabelSettings_6tc0p")
@@ -485,10 +485,10 @@ expand_mode = 1
 
 [node name="BtnHardDrop" type="Button" parent="TouchControls" unique_id=944576261]
 layout_mode = 0
-offset_left = 455.0
-offset_top = 750.0
-offset_right = 535.0
-offset_bottom = 825.0
+offset_left = 365.0
+offset_top = 840.0
+offset_right = 445.0
+offset_bottom = 915.0
 flat = true
 
 [node name="BtnTexture" type="TextureRect" parent="TouchControls/BtnHardDrop"]
