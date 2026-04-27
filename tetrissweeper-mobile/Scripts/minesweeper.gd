@@ -90,8 +90,8 @@ var rng = RandomNumberGenerator.new()
 var held_tetromino: Array = []
 var held_piece_atlas: Vector2i
 var can_hold: bool = true
-const HOLD_PREVIEW_POS: Vector2i = Vector2i(-7, -4)
-const NEXT_PREVIEW_POS: Vector2i = Vector2i( 1, -4)
+const HOLD_PREVIEW_POS: Vector2i = Vector2i(-6, -4)
+const NEXT_PREVIEW_POS: Vector2i = Vector2i(1, -4)
 
 # Pause
 var is_paused: bool = false
@@ -140,7 +140,7 @@ const MS_ROW_COVERED: int = 0
 const MS_ROW_BOMB: int = 2
 const MS_ROW_FLAG: int = 3
 # Number n (1-8) is at row: 3 + n
-const MS_COL_GRAY: int = 7  # gray column, used exclusively for the covered state
+const MS_COL_GRAY: int = 7 # gray column, used exclusively for the covered state
 
 const BOMBS_PER_PIECE: int = 1
 
@@ -361,7 +361,7 @@ func hard_drop() -> void:
 # --- Speed scaling by cleared lines (linear) ---
 const FALL_INTERVAL_START: float = 1.0
 const FALL_INTERVAL_MIN: float = 0.1
-const FALL_SPEED_PER_LINE: float = 0.03  # each cleared line subtracts 0.03s (max speed at 30 lines)
+const FALL_SPEED_PER_LINE: float = 0.03 # each cleared line subtracts 0.03s (max speed at 30 lines)
 
 func get_current_fall_interval() -> float:
 	return maxf(FALL_INTERVAL_MIN, FALL_INTERVAL_START - lines_cleared * FALL_SPEED_PER_LINE)
