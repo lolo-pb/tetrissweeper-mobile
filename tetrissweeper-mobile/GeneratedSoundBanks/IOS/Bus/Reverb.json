@@ -1,0 +1,48 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "iOS",
+  "BasePlatform": "iOS",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "150",
+  "SoundBanks": [
+   {
+    "Id": "348963605",
+    "Type": "Bus",
+    "GUID": "{F08A9AAD-D5AB-4011-9CCA-B5242BC65F8B}",
+    "Language": "SFX",
+    "Hash": "{38928569-9631-A21B-BBEF-2271D5E180E3}",
+    "ObjectPath": "Reverb",
+    "ShortName": "Reverb",
+    "Path": "Bus/Reverb.bnk",
+    "Plugins": {
+     "ShareSets": [
+      {
+       "Id": "2791153688",
+       "Name": "Hall_Small",
+       "ObjectPath": "\\Effects\\Factory Effects\\RoomVerb\\Halls\\Hall_Small",
+       "GUID": "{D65B5F04-B83B-412C-9434-34A13A477E24}",
+       "LibName": "Wwise RoomVerb",
+       "LibId": "7733251"
+      }
+     ]
+    },
+    "AuxBusses": [
+     {
+      "Id": "348963605",
+      "Name": "Reverb",
+      "ObjectPath": "\\Master-Mixer Hierarchy\\Default Work Unit\\Master Audio Bus\\Music\\Reverb",
+      "GUID": "{F08A9AAD-D5AB-4011-9CCA-B5242BC65F8B}",
+      "PluginRefs": {
+       "ShareSets": [
+        {
+         "Id": "2791153688"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  ],
+  "FileHash": "{7F8F75E7-427F-D452-E5F5-DE79F57521B5}"
+ }
+}

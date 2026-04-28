@@ -159,7 +159,7 @@ mouse_filter = 2
 texture = ExtResource("2_xvpj2")
 expand_mode = 1
 
-[node name="HoldPanelBg" type="TextureRect" parent="."]
+[node name="HoldPanelBg" type="TextureRect" parent="." unique_id=740224608]
 top_level = true
 z_index = -1
 offset_left = 8.0
@@ -170,7 +170,7 @@ mouse_filter = 2
 texture = ExtResource("6_hpanel")
 expand_mode = 1
 
-[node name="NextPanelBg" type="TextureRect" parent="."]
+[node name="NextPanelBg" type="TextureRect" parent="." unique_id=615919417]
 top_level = true
 z_index = -1
 offset_left = 208.0
@@ -192,3 +192,26 @@ tile_set = SubResource("TileSet_xvpj2")
 
 [node name="Mines" type="TileMapLayer" parent="." unique_id=1365100387]
 tile_set = SubResource("TileSet_h0ior")
+
+[node name="AkBank2" type="AkBank" parent="." unique_id=2083411433]
+bank = {
+"id": 1355168291,
+"name": "Init"
+}
+load_on = 2
+
+[node name="AkListener2D" type="AkListener2D" parent="." unique_id=48418431]
+
+[node name="AkBank" type="AkBank" parent="." unique_id=1092585199]
+bank = {
+"id": 4072029455.0,
+"name": "New_SoundBank"
+}
+load_on = 2
+
+[node name="AkEvent2D" type="AkEvent2D" parent="." unique_id=769827951]
+event = {
+"id": 1281810935.0,
+"name": "Start"
+}
+trigger_on = 2
