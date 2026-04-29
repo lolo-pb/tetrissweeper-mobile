@@ -178,6 +178,12 @@ func _ready() -> void:
 	tc.get_node("BtnPause").pressed.connect(_on_btn_pause_pressed)
 
 	load_highscore()
+	
+	# Wwise Initialization
+	Wwise.register_game_obj(self, "MinesweeperGame")
+	Wwise.load_bank("Init")
+	Wwise.load_bank("MainBank")
+	
 	show_main_menu()
 
 
@@ -214,8 +220,14 @@ func start_game() -> void:
 	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
 	initialize_tetromino()
 
+	Wwise.set_state("Game_Phase", "Few_Pieces")
+
+
 
 func show_main_menu() -> void:
+	Wwise.set_state("Game_Phase", "Menu")
+	Wwise.post_event("Play_Music", self)
+	
 	is_game_running = false
 	is_paused = false
 	first_tetromino_landed = false
@@ -237,7 +249,11 @@ func show_main_menu() -> void:
 
 
 func show_game_over_menu() -> void:
+	Wwise.post_event("Play_GameOver", self)
+	Wwise.set_state("Game_Phase", "Menu")
+	
 	is_game_running = false
+
 	touch_down_held = false
 	reset_board_touch_state()
 	save_highscore()
@@ -484,6 +500,7 @@ func land_tetromino() -> void:
 	if not first_tetromino_landed:
 		first_tetromino_landed = true
 		reveal_all_bottom_edge_hints()
+	update_music_state()
 
 
 func clear_next_tetromino_preview() -> void:
@@ -505,6 +522,17 @@ func check_rows() -> void:
 			score_label.text = "Score: " + str(score)
 		else:
 			row -= 1
+	update_music_state()
+
+func update_music_state() -> void:
+	var count = minesweeper_cells.size()
+	if count < 40:
+		Wwise.set_state("Game_Phase", "Few_Pieces")
+	elif count < 100:
+		Wwise.set_state("Game_Phase", "Mod_Pieces")
+	else:
+		Wwise.set_state("Game_Phase", "High_Pieces")
+
 
 
 func is_minesweeper_row_cleared(row: int) -> bool:
@@ -574,6 +602,7 @@ func is_game_over() -> void:
 
 func rotate_tetromino() -> void:
 	if is_valid_rotation():
+		Wwise.post_event("Play_Rotate", self)
 		clear_tetromino()
 		rotation_index = (rotation_index + 1) % 4
 		active_tetromino = current_tetromino[rotation_index]
@@ -787,6 +816,7 @@ func reveal_cell(cell: Vector2i) -> void:
 	if minesweeper_cells[cell]["state"] != CellState.COVERED:
 		return
 
+	Wwise.post_event("Play_Click", self)
 	minesweeper_cells[cell]["state"] = CellState.REVEALED
 
 	var tcol: int = minesweeper_cells[cell]["tetromino_type"]
