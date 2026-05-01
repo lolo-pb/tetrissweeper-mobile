@@ -2,20 +2,20 @@ class_name AK
 
 class EVENTS:
 
+	const CLICK = 1584507803.0
+	const PERDER = 2433235219.0
 	const START = 1281810935.0
 	const LOWINT = 3325438800.0
 	const MEDINT = 2933035976.0
 	const HIGHINT = 3420765524.0
-	const CLICK = 1584507803.0
-	const PERDER = 2433235219.0
 
 	const _dict = {
+		"Click": CLICK,
+		"Perder": PERDER,
 		"Start": START,
 		"Lowint": LOWINT,
 		"Medint": MEDINT,
-		"Highint": HIGHINT,
-		"Click": CLICK,
-		"Perder": PERDER
+		"Highint": HIGHINT
 	}
 
 class STATES:
