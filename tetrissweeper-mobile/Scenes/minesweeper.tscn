@@ -1,4 +1,4 @@
-[gd_scene format=4 uid="uid://dgc444tdkf57y"]
+[gd_scene load_steps=15 format=4 uid="uid://dgc444tdkf57y"]
 
 [ext_resource type="Script" uid="uid://dwjl3mao5u0j3" path="res://Scripts/minesweeper.gd" id="1_dfkm2"]
 [ext_resource type="PackedScene" uid="uid://tnkaoxobdw10" path="res://Scenes/game_hud.tscn" id="2_b7cn6"]
@@ -142,12 +142,12 @@ texture = ExtResource("5_7xpvn")
 [sub_resource type="TileSet" id="TileSet_h0ior"]
 sources/0 = SubResource("TileSetAtlasSource_x0aub")
 
-[node name="Node2D" type="Node2D" unique_id=1212230857]
+[node name="Node2D" type="Node2D"]
 position = Vector2(170, 250)
 scale = Vector2(1.4, 1.4)
 script = ExtResource("1_dfkm2")
 
-[node name="TextureRect2" type="TextureRect" parent="." unique_id=296669446]
+[node name="TextureRect2" type="TextureRect" parent="."]
 top_level = true
 z_index = -1
 anchors_preset = 15
@@ -159,7 +159,7 @@ mouse_filter = 2
 texture = ExtResource("2_xvpj2")
 expand_mode = 1
 
-[node name="HoldPanelBg" type="TextureRect" parent="." unique_id=1329378292]
+[node name="HoldPanelBg" type="TextureRect" parent="."]
 top_level = true
 z_index = -1
 offset_left = 8.0
@@ -170,7 +170,7 @@ mouse_filter = 2
 texture = ExtResource("6_hpanel")
 expand_mode = 1
 
-[node name="NextPanelBg" type="TextureRect" parent="." unique_id=1306201021]
+[node name="NextPanelBg" type="TextureRect" parent="."]
 top_level = true
 z_index = -1
 offset_left = 208.0
@@ -181,37 +181,16 @@ mouse_filter = 2
 texture = ExtResource("7_npanel")
 expand_mode = 1
 
-[node name="GameHUD" parent="." unique_id=1288649672 instance=ExtResource("2_b7cn6")]
+[node name="GameHUD" parent="." instance=ExtResource("2_b7cn6")]
 
-[node name="Active" type="TileMapLayer" parent="." unique_id=2142935575]
+[node name="Active" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_x0aub")
 
-[node name="Board" type="TileMapLayer" parent="." unique_id=1794593267]
+[node name="Board" type="TileMapLayer" parent="."]
 tile_map_data = PackedByteArray("AAAAAAAAAAAKAAAAAAAAAAEAAAAKAAAAAAAAAAIAAAAKAAAAAAAAAAMAAAAKAAAAAAAAAAQAAAAKAAAAAAAAAAUAAAAKAAAAAAAAAAYAAAAKAAAAAAAAAAcAAAAKAAAAAAAAAAgAAAAKAAAAAAAAAAkAAAAKAAAAAAAAAAoAAAAKAAAAAAAAAAsAAAAKAAAAAAAAAAwAAAAKAAAAAAAAAA0AAAAKAAAAAAAAAA4AAAAKAAAAAAAAAA8AAAAKAAAAAAAAABAAAAAKAAAAAAAAABEAAAAKAAAAAAAAABIAAAAKAAAAAAAAABMAAAAKAAAAAAAAABQAAAAKAAAAAAAAABUAAAAKAAAAAAABAAAAAAAKAAAAAAABABUAAAAKAAAAAAACAAAAAAAKAAAAAAACABUAAAAKAAAAAAADAAAAAAAKAAAAAAADABUAAAAKAAAAAAAEAAAAAAAKAAAAAAAEABUAAAAKAAAAAAAFAAAAAAAKAAAAAAAFABUAAAAKAAAAAAAGAAAAAAAKAAAAAAAGABUAAAAKAAAAAAAHAAAAAAAKAAAAAAAHABUAAAAKAAAAAAAIAAAAAAAKAAAAAAAIABUAAAAKAAAAAAAJAAAAAAAKAAAAAAAJABUAAAAKAAAAAAAKAAAAAAAKAAAAAAAKABUAAAAKAAAAAAALAAAAAAAKAAAAAAALAAEAAAAKAAAAAAALAAIAAAAKAAAAAAALAAMAAAAKAAAAAAALAAQAAAAKAAAAAAALAAUAAAAKAAAAAAALAAYAAAAKAAAAAAALAAcAAAAKAAAAAAALAAgAAAAKAAAAAAALAAkAAAAKAAAAAAALAAoAAAAKAAAAAAALAAsAAAAKAAAAAAALAAwAAAAKAAAAAAALAA0AAAAKAAAAAAALAA4AAAAKAAAAAAALAA8AAAAKAAAAAAALABAAAAAKAAAAAAALABEAAAAKAAAAAAALABIAAAAKAAAAAAALABMAAAAKAAAAAAALABQAAAAKAAAAAAALABUAAAAKAAAAAAA=")
 tile_set = SubResource("TileSet_xvpj2")
 
-[node name="Mines" type="TileMapLayer" parent="." unique_id=1320413028]
+[node name="Mines" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_h0ior")
 
-[node name="AkBank2" type="AkBank" parent="." unique_id=2012393194]
-bank = {
-"id": 1355168291,
-"name": "Init"
-}
-load_on = 2
-
-[node name="AkListener2D" type="AkListener2D" parent="." unique_id=1110218898]
-
-[node name="AkBank" type="AkBank" parent="." unique_id=349843823]
-bank = {
-"id": 4072030000.0,
-"name": "New_SoundBank"
-}
-load_on = 2
-
-[node name="AkEvent2D" type="AkEvent2D" parent="." unique_id=1946517677]
-event = {
-"id": 1281810000.0,
-"name": "Start"
-}
-trigger_on = 2
+[node name="AkListener2D" type="AkListener2D" parent="."]

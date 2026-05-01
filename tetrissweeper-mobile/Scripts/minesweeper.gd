@@ -249,7 +249,7 @@ func show_main_menu() -> void:
 
 
 func show_game_over_menu() -> void:
-	# Wwise.post_event("Play_GameOver", self) # Uncomment when you add this event to Wwise
+	Wwise.post_event("Perder", self)
 	Wwise.set_state("Intensity", "None")
 	
 	is_game_running = false
@@ -526,9 +526,9 @@ func check_rows() -> void:
 
 func update_music_state() -> void:
 	var count = minesweeper_cells.size()
-	if count < 40:
+	if count < 20:
 		Wwise.set_state("Intensity", "Lowint")
-	elif count < 100:
+	elif count < 50:
 		Wwise.set_state("Intensity", "Medint")
 	else:
 		Wwise.set_state("Intensity", "Highint")
@@ -816,7 +816,7 @@ func reveal_cell(cell: Vector2i) -> void:
 	if minesweeper_cells[cell]["state"] != CellState.COVERED:
 		return
 
-	# Wwise.post_event("Play_Click", self) # Uncomment when you add this event to Wwise
+	Wwise.post_event("Click", self)
 	minesweeper_cells[cell]["state"] = CellState.REVEALED
 
 	var tcol: int = minesweeper_cells[cell]["tetromino_type"]
