@@ -96,8 +96,9 @@ const NEXT_PREVIEW_POS: Vector2i = Vector2i(3, -8)
 # Pause
 var is_paused: bool = false
 
-# Music
-var current_music_state: String = ""
+# Music — two independent layers
+var intensity_playing_id: int = 0
+var current_intensity: String = ""
 
 # Highscore
 var highscore: int = 0
@@ -186,8 +187,8 @@ func _ready() -> void:
 	Wwise.register_game_obj(self, "MinesweeperGame")
 	Wwise.load_bank("Init")
 	Wwise.load_bank("New_SoundBank")
-	
-	set_music_state("Start")
+
+	Wwise.post_event("Start", self)
 
 	show_main_menu()
 
@@ -225,12 +226,12 @@ func start_game() -> void:
 	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
 	initialize_tetromino()
 
-	set_music_state("Lowint")
+	set_intensity("Lowint")
 
 
 
 func show_main_menu() -> void:
-	set_music_state("Start")
+	stop_intensity()
 	
 	is_game_running = false
 	is_paused = false
@@ -254,7 +255,7 @@ func show_main_menu() -> void:
 
 func show_game_over_menu() -> void:
 	Wwise.post_event("Perder", self)
-	set_music_state("Start")
+	stop_intensity()
 	
 	is_game_running = false
 
@@ -289,7 +290,7 @@ func toggle_pause() -> void:
 
 
 func pause_game() -> void:
-	set_music_state("Start")
+	stop_intensity()
 	is_paused = true
 	touch_down_held = false
 	reset_board_touch_state()
@@ -530,21 +531,30 @@ func check_rows() -> void:
 			row -= 1
 	update_music_state()
 
-func set_music_state(state: String) -> void:
-	if state == current_music_state:
+func stop_intensity() -> void:
+	if intensity_playing_id != 0:
+		Wwise.stop_event(intensity_playing_id, 500, AkUtils.AK_CURVE_LINEAR)
+		intensity_playing_id = 0
+		current_intensity = ""
+
+
+func set_intensity(state: String) -> void:
+	if state == current_intensity:
 		return
-	current_music_state = state
-	Wwise.post_event(state, self)
+	current_intensity = state
+	if intensity_playing_id != 0:
+		Wwise.stop_event(intensity_playing_id, 0, AkUtils.AK_CURVE_LINEAR)
+	intensity_playing_id = Wwise.post_event(state, self)
 
 
 func update_music_state() -> void:
 	var count = minesweeper_cells.size()
 	if count < 20:
-		set_music_state("Lowint")
+		set_intensity("Lowint")
 	elif count < 50:
-		set_music_state("Medint")
+		set_intensity("Medint")
 	else:
-		set_music_state("Highint")
+		set_intensity("Highint")
 
 
 
