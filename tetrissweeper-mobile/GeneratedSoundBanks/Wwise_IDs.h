@@ -13,17 +13,19 @@ namespace AK
 {
     namespace EVENTS
     {
+        static const AkUniqueID CLICK = 1584507803U;
         static const AkUniqueID HIGHINT = 3420765524U;
         static const AkUniqueID LOWINT = 3325438800U;
         static const AkUniqueID MEDINT = 2933035976U;
+        static const AkUniqueID PERDER = 2433235219U;
         static const AkUniqueID START = 1281810935U;
     } // namespace EVENTS
 
     namespace STATES
     {
-        namespace INTENSITY
+        namespace STATES
         {
-            static const AkUniqueID GROUP = 2470328564U;
+            static const AkUniqueID GROUP = 1208172739U;
 
             namespace STATE
             {
@@ -31,8 +33,9 @@ namespace AK
                 static const AkUniqueID LOWINT = 3325438800U;
                 static const AkUniqueID MEDINT = 2933035976U;
                 static const AkUniqueID NONE = 748895195U;
+                static const AkUniqueID START = 1281810935U;
             } // namespace STATE
-        } // namespace INTENSITY
+        } // namespace STATES
 
     } // namespace STATES
 
@@ -63,6 +66,7 @@ namespace AK
         static const AkUniqueID MASTER_AUDIO_BUS = 3803692087U;
         static const AkUniqueID MEDIUMINT = 1233031547U;
         static const AkUniqueID MUSIC = 3991942870U;
+        static const AkUniqueID SFX = 393239870U;
     } // namespace BUSSES
 
     namespace AUX_BUSSES

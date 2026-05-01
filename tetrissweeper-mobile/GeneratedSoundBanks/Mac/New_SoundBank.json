@@ -10,7 +10,7 @@
     "Type": "User",
     "GUID": "{BD4CC356-A0DF-4BAB-8BEF-222D5078B28B}",
     "Language": "SFX",
-    "Hash": "{D3973F01-1B8C-B50A-9C9E-81F3C6E20C17}",
+    "Hash": "{301E2A14-36D6-0521-BFAB-734CBE3A83F2}",
     "ObjectPath": "\\SoundBanks\\Default Work Unit\\New_SoundBank",
     "ShortName": "New_SoundBank",
     "Path": "New_SoundBank.bnk",
@@ -326,6 +326,14 @@
       "Location": "Memory",
       "ShortName": "19.lent.wav",
       "CachePath": "SFX/19.lent_FBC78EF0.wem"
+     },
+     {
+      "Id": "171260197",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "click.wav",
+      "CachePath": "SFX/click_818F3B66.wem"
      },
      {
       "Id": "177899161",
@@ -944,6 +952,14 @@
       "CachePath": "SFX/13.lent_FBC78EF0.wem"
      },
      {
+      "Id": "620569379",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "click 2.wav",
+      "CachePath": "SFX/click 2_818F3B66.wem"
+     },
+     {
       "Id": "637681118",
       "Language": "SFX",
       "Streaming": "false",
@@ -1360,6 +1376,14 @@
       "CachePath": "SFX/9.batalent_FBC78EF0.wem"
      },
      {
+      "Id": "924506321",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "explosion.wav",
+      "CachePath": "SFX/explosion_818F3B66.wem"
+     },
+     {
       "Id": "925543168",
       "Language": "SFX",
       "Streaming": "false",
@@ -1570,20 +1594,37 @@
     ],
     "Events": [
      {
+      "Id": "1584507803",
+      "Name": "Click",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Click",
+      "GUID": "{C7782F64-16CA-4831-8EFF-56D71A399CBB}",
+      "DurationType": "OneShot",
+      "DurationMin": "0.9677324",
+      "DurationMax": "0.9677324",
+      "MediaRefs": [
+       {
+        "Id": "171260197"
+       },
+       {
+        "Id": "620569379"
+       }
+      ]
+     },
+     {
       "Id": "3420765524",
       "Name": "Highint",
-      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Highint",
-      "GUID": "{C2CD1E99-CE40-4AE7-8C21-4F4AE590C348}",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\In game\\Highint",
+      "GUID": "{EE13C420-FEAE-4C44-9F50-E90B0559F9B8}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
       "DurationMax": "0",
       "ActionSetState": [
        {
-        "GroupId": "2470328564",
+        "GroupId": "1208172739",
         "Id": "3420765524",
         "Name": "Highint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Highint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Highint",
         "GUID": "{8A730540-040E-48DC-98A5-E171037D6FEB}"
        }
       ]
@@ -1591,18 +1632,18 @@
      {
       "Id": "3325438800",
       "Name": "Lowint",
-      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Lowint",
-      "GUID": "{D874AA9D-4BEB-4D92-8200-4C6A6229442A}",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\In game\\Lowint",
+      "GUID": "{E7A74DD0-968F-4FEA-894D-C646C7BA478D}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
       "DurationMax": "0",
       "ActionSetState": [
        {
-        "GroupId": "2470328564",
+        "GroupId": "1208172739",
         "Id": "3325438800",
         "Name": "Lowint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Lowint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Lowint",
         "GUID": "{9C151A33-E55B-451D-9CB4-54211C109EA1}"
        }
       ]
@@ -1610,26 +1651,49 @@
      {
       "Id": "2933035976",
       "Name": "Medint",
-      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Medint",
-      "GUID": "{3BE8F39C-9E05-4D6B-8454-B3A3742C185A}",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\In game\\Medint",
+      "GUID": "{E9106BB1-C6AA-4117-9C55-1069A3801B2F}",
       "MaxAttenuation": "0",
       "DurationType": "OneShot",
       "DurationMin": "0",
       "DurationMax": "0",
       "ActionSetState": [
        {
-        "GroupId": "2470328564",
+        "GroupId": "1208172739",
         "Id": "2933035976",
         "Name": "Medint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Medint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Medint",
         "GUID": "{554D108D-7371-4778-9E8A-11C67E61267D}"
+       }
+      ]
+     },
+     {
+      "Id": "2433235219",
+      "Name": "Perder",
+      "ObjectPath": "\\Events\\Default Work Unit\\SFX\\Perder",
+      "GUID": "{BA94DDC3-6895-4950-949E-D84A6D24F1D8}",
+      "DurationType": "OneShot",
+      "DurationMin": "4.8387074",
+      "DurationMax": "4.8387074",
+      "MediaRefs": [
+       {
+        "Id": "924506321"
+       }
+      ],
+      "ActionSetState": [
+       {
+        "GroupId": "1208172739",
+        "Id": "1281810935",
+        "Name": "Start",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Start",
+        "GUID": "{D8435E3F-A520-4193-BC51-8189D9A4B340}"
        }
       ]
      },
      {
       "Id": "1281810935",
       "Name": "Start",
-      "ObjectPath": "\\Events\\Default Work Unit\\Music\\Start",
+      "ObjectPath": "\\Events\\Default Work Unit\\Music\\In game\\Start",
       "GUID": "{AF65FC19-D659-4609-936D-36D139BBE6C6}",
       "DurationType": "Infinite",
       "MediaRefs": [
@@ -1658,7 +1722,7 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "3420765524",
          "GUID": "{8A730540-040E-48DC-98A5-E171037D6FEB}"
         },
@@ -1845,7 +1909,7 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "3325438800",
          "GUID": "{9C151A33-E55B-451D-9CB4-54211C109EA1}"
         },
@@ -1951,7 +2015,7 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "2933035976",
          "GUID": "{554D108D-7371-4778-9E8A-11C67E61267D}"
         },
@@ -2078,7 +2142,7 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "3420765524",
          "GUID": "{8A730540-040E-48DC-98A5-E171037D6FEB}"
         },
@@ -2151,7 +2215,7 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "3325438800",
          "GUID": "{9C151A33-E55B-451D-9CB4-54211C109EA1}"
         },
@@ -2203,9 +2267,94 @@
        {
         "SwitchValue": {
          "GroupType": "State",
-         "GroupId": "2470328564",
+         "GroupId": "1208172739",
          "Id": "2933035976",
          "GUID": "{554D108D-7371-4778-9E8A-11C67E61267D}"
+        },
+        "MediaRefs": [
+         {
+          "Id": "35513488"
+         },
+         {
+          "Id": "46929886"
+         },
+         {
+          "Id": "104890593"
+         },
+         {
+          "Id": "105853083"
+         },
+         {
+          "Id": "159339347"
+         },
+         {
+          "Id": "167382474"
+         },
+         {
+          "Id": "301540155"
+         },
+         {
+          "Id": "370840186"
+         },
+         {
+          "Id": "374206197"
+         },
+         {
+          "Id": "398928655"
+         },
+         {
+          "Id": "413873113"
+         },
+         {
+          "Id": "419678230"
+         },
+         {
+          "Id": "434400442"
+         },
+         {
+          "Id": "444892221"
+         },
+         {
+          "Id": "472510495"
+         },
+         {
+          "Id": "489140686"
+         },
+         {
+          "Id": "494270643"
+         },
+         {
+          "Id": "575012426"
+         },
+         {
+          "Id": "617674377"
+         },
+         {
+          "Id": "641892351"
+         },
+         {
+          "Id": "643798064"
+         },
+         {
+          "Id": "648890083"
+         },
+         {
+          "Id": "829879822"
+         },
+         {
+          "Id": "979930720"
+         },
+         {
+          "Id": "991519819"
+         }
+        ]
+       },
+       {
+        "SwitchValue": {
+         "GroupType": "State",
+         "GroupId": "1208172739",
+         "Id": "1281810935",
+         "GUID": "{D8435E3F-A520-4193-BC51-8189D9A4B340}"
         },
         "MediaRefs": [
          {
@@ -2288,44 +2437,50 @@
       ],
       "ActionSetState": [
        {
-        "GroupId": "2470328564",
-        "Id": "3325438800",
-        "Name": "Lowint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Lowint",
-        "GUID": "{9C151A33-E55B-451D-9CB4-54211C109EA1}"
+        "GroupId": "1208172739",
+        "Id": "1281810935",
+        "Name": "Start",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Start",
+        "GUID": "{D8435E3F-A520-4193-BC51-8189D9A4B340}"
        }
       ]
      }
     ],
     "StateGroups": [
      {
-      "Id": "2470328564",
-      "Name": "Intensity",
-      "ObjectPath": "\\States\\Default Work Unit\\Intensity",
+      "Id": "1208172739",
+      "Name": "States",
+      "ObjectPath": "\\States\\Default Work Unit\\States",
       "GUID": "{7D982316-35C0-4CBF-90E3-D7E1E78E83BC}",
       "States": [
        {
         "Id": "748895195",
         "Name": "None",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\None",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\None",
         "GUID": "{5D8EF241-8460-4E24-BCF0-5BFBE61D6E78}"
+       },
+       {
+        "Id": "1281810935",
+        "Name": "Start",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Start",
+        "GUID": "{D8435E3F-A520-4193-BC51-8189D9A4B340}"
        },
        {
         "Id": "2933035976",
         "Name": "Medint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Medint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Medint",
         "GUID": "{554D108D-7371-4778-9E8A-11C67E61267D}"
        },
        {
         "Id": "3325438800",
         "Name": "Lowint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Lowint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Lowint",
         "GUID": "{9C151A33-E55B-451D-9CB4-54211C109EA1}"
        },
        {
         "Id": "3420765524",
         "Name": "Highint",
-        "ObjectPath": "\\States\\Default Work Unit\\Intensity\\Highint",
+        "ObjectPath": "\\States\\Default Work Unit\\States\\Highint",
         "GUID": "{8A730540-040E-48DC-98A5-E171037D6FEB}"
        }
       ]
@@ -2333,6 +2488,6 @@
     ]
    }
   ],
-  "FileHash": "{39BD3775-0FE9-567F-A421-180FF86EFA55}"
+  "FileHash": "{3020022A-53CC-7940-6D99-096F3FE5BC9B}"
  }
 }

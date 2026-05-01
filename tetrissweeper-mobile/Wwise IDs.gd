@@ -2,37 +2,43 @@ class_name AK
 
 class EVENTS:
 
-	const HIGHINT = 3420765524.0
+	const START = 1281810935.0
 	const LOWINT = 3325438800.0
 	const MEDINT = 2933035976.0
-	const START = 1281810935.0
+	const HIGHINT = 3420765524.0
+	const CLICK = 1584507803.0
+	const PERDER = 2433235219.0
 
 	const _dict = {
-		"Highint": HIGHINT,
+		"Start": START,
 		"Lowint": LOWINT,
 		"Medint": MEDINT,
-		"Start": START
+		"Highint": HIGHINT,
+		"Click": CLICK,
+		"Perder": PERDER
 	}
 
 class STATES:
 
-	class INTENSITY:
-		const GROUP = 2470328564.0
+	class STATES:
+		const GROUP = 1208172739.0
 
 		class STATE:
 			const NONE = 748895195.0
 			const LOWINT = 3325438800.0
 			const MEDINT = 2933035976.0
 			const HIGHINT = 3420765524.0
+			const START = 1281810935.0
 
 	const _dict = {
-		"Intensity": {
-			"GROUP": 2470328564.0,
+		"States": {
+			"GROUP": 1208172739.0,
 			"STATE": {
 				"None": 748895195.0,
 				"Lowint": 3325438800.0,
 				"Medint": 2933035976.0,
-				"Highint": 3420765524.0
+				"Highint": 3420765524.0,
+				"Start": 1281810935.0
 			}
 		}
 	}
@@ -88,13 +94,15 @@ class BUSSES:
 	const LOWINT = 3325438800.0
 	const MEDIUMINT = 1233031547.0
 	const HIGHINT = 3420765524.0
+	const SFX = 393239870.0
 
 	const _dict = {
 		"Master Audio Bus": MASTER_AUDIO_BUS,
 		"Music": MUSIC,
 		"Lowint": LOWINT,
 		"Mediumint": MEDIUMINT,
-		"Highint": HIGHINT
+		"Highint": HIGHINT,
+		"SFX": SFX
 	}
 
 class AUX_BUSSES:
