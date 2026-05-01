@@ -96,6 +96,9 @@ const NEXT_PREVIEW_POS: Vector2i = Vector2i(3, -8)
 # Pause
 var is_paused: bool = false
 
+# Music
+var current_music_state: String = ""
+
 # Highscore
 var highscore: int = 0
 const SAVE_PATH: String = "user://highscore.cfg"
@@ -184,6 +187,8 @@ func _ready() -> void:
 	Wwise.load_bank("Init")
 	Wwise.load_bank("New_SoundBank")
 	
+	set_music_state("Start")
+
 	show_main_menu()
 
 
@@ -220,13 +225,12 @@ func start_game() -> void:
 	next_piece_atlas = Vector2i(all_tetrominoes.find(next_tetromino), 0)
 	initialize_tetromino()
 
-	Wwise.set_state("Intensity", "Lowint")
+	set_music_state("Lowint")
 
 
 
 func show_main_menu() -> void:
-	Wwise.set_state("Intensity", "None")
-	Wwise.post_event("Start", self)
+	set_music_state("Start")
 	
 	is_game_running = false
 	is_paused = false
@@ -250,7 +254,7 @@ func show_main_menu() -> void:
 
 func show_game_over_menu() -> void:
 	Wwise.post_event("Perder", self)
-	Wwise.set_state("Intensity", "None")
+	set_music_state("Start")
 	
 	is_game_running = false
 
@@ -285,6 +289,7 @@ func toggle_pause() -> void:
 
 
 func pause_game() -> void:
+	set_music_state("Start")
 	is_paused = true
 	touch_down_held = false
 	reset_board_touch_state()
@@ -293,6 +298,7 @@ func pause_game() -> void:
 
 
 func resume_game() -> void:
+	update_music_state()
 	is_paused = false
 	pause_menu.visible = false
 	touch_controls.visible = true
@@ -524,14 +530,21 @@ func check_rows() -> void:
 			row -= 1
 	update_music_state()
 
+func set_music_state(state: String) -> void:
+	if state == current_music_state:
+		return
+	current_music_state = state
+	Wwise.post_event(state, self)
+
+
 func update_music_state() -> void:
 	var count = minesweeper_cells.size()
 	if count < 20:
-		Wwise.set_state("Intensity", "Lowint")
+		set_music_state("Lowint")
 	elif count < 50:
-		Wwise.set_state("Intensity", "Medint")
+		set_music_state("Medint")
 	else:
-		Wwise.set_state("Intensity", "Highint")
+		set_music_state("Highint")
 
 
 
